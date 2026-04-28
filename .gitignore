@@ -43,3 +43,13 @@ checkpoints/
 
 scripts/output/
 notebooks/.ipynb_checkpoints/
+
+# Paper-build artefacts — regenerable via paper/build.sh
+paper/figures/
+paper/*.pdf
+paper/*.html
+paper/*.tex
+paper/paper.aux
+paper/paper.log
+paper/paper.bbl
+paper/paper.blg
