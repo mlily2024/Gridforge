@@ -1,6 +1,6 @@
 """GridForge — physics-informed digital twin and benchmark for UK 11kV cables."""
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 from .physics.thermal import (
     CableGeometry,
