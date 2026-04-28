@@ -1,6 +1,6 @@
 """GridForge — physics-informed digital twin and benchmark for UK 11kV cables."""
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 from .physics.thermal import (
     CableGeometry,
@@ -16,8 +16,13 @@ from .physics.thermal import (
     dielectric_loss_per_phase,
 )
 from .physics.cable_archetype import (
+    ARCHETYPES,
     UK_11KV_240MM2_XLPE_3CORE,
+    UK_11KV_240MM2_CU_PILC_3CORE,
+    UK_11KV_300MM2_CU_XLPE_1CORE,
+    UK_11KV_95MM2_CU_XLPE_3CORE,
     UK_TYPICAL_INSTALLATION,
+    archetype_by_name,
 )
 from .physics.electrical import (
     average_e_field,
@@ -57,8 +62,13 @@ __all__ = [
     "ac_resistance_at_temp",
     "dielectric_loss_per_phase",
     # archetypes
+    "ARCHETYPES",
     "UK_11KV_240MM2_XLPE_3CORE",
+    "UK_11KV_95MM2_CU_XLPE_3CORE",
+    "UK_11KV_300MM2_CU_XLPE_1CORE",
+    "UK_11KV_240MM2_CU_PILC_3CORE",
     "UK_TYPICAL_INSTALLATION",
+    "archetype_by_name",
     # electrical
     "average_e_field",
     "conductor_outer_radius_m",
