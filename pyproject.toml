@@ -65,3 +65,6 @@ warn_unreachable = true
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-v --strict-markers"
+markers = [
+    "slow: marks tests that take more than ~10 seconds (deselect with '-m \"not slow\"')",
+]
