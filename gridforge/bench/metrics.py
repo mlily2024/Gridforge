@@ -10,6 +10,11 @@ from __future__ import annotations
 
 import numpy as np
 
+# `np.trapezoid` is the NumPy >= 2.0 name for the trapezoidal integrator;
+# `np.trapz` is the < 2.0 spelling (deprecated in 2.0). Resolve once so the
+# package works on its declared numpy>=1.26 floor and on numpy 2.x alike.
+_trapezoid = getattr(np, "trapezoid", None) or np.trapz
+
 
 def _to_array(x) -> np.ndarray:
     return np.asarray(x, dtype=np.float64).ravel()
@@ -51,7 +56,7 @@ def auc_pr(y_true: np.ndarray, y_score: np.ndarray) -> float:
     # Prepend (recall=0, precision=1) so the trapezoid rule starts cleanly
     recall = np.concatenate([[0.0], recall])
     precision = np.concatenate([[1.0], precision])
-    return float(np.trapezoid(precision, recall))
+    return float(_trapezoid(precision, recall))
 
 
 def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
