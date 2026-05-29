@@ -21,8 +21,8 @@ PINN, dataset, benchmark, and paper are on the 12-week roadmap (see `docs/`).
 ## Quickstart
 
 ```bash
-git clone https://github.com/<user>/gridforge.git
-cd gridforge
+git clone https://github.com/mlily2024/Gridforge.git
+cd Gridforge
 pip install -e ".[dev]"
 pytest tests/
 python scripts/01_validate_iec60287.py
