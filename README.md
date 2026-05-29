@@ -1,5 +1,7 @@
 # GridForge
 
+[![CI](https://github.com/mlily2024/Gridforge/actions/workflows/ci.yml/badge.svg)](https://github.com/mlily2024/Gridforge/actions/workflows/ci.yml)
+
 **Open-source physics-informed digital twin and benchmark suite for UK 11kV underground distribution cables.**
 
 GridForge is a research-grade reference implementation that bundles:
