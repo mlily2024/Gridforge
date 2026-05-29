@@ -83,10 +83,12 @@ class TestFailureModeEffects:
 
     def test_thermal_ageing_more_damaging_than_healthy(self) -> None:
         healthy = simulate_cable_year(_make_spec(failure_mode=HealthyMode(), duration_years=1.0))
-        ageing = simulate_cable_year(_make_spec(
-            failure_mode=ThermalAgeingMode(overheat_offset_C=30.0),
-            duration_years=1.0,
-        ))
+        ageing = simulate_cable_year(
+            _make_spec(
+                failure_mode=ThermalAgeingMode(overheat_offset_C=30.0),
+                duration_years=1.0,
+            )
+        )
         assert ageing.cumulative_damage[-1] > healthy.cumulative_damage[-1]
 
     def test_water_ingress_field_grows(self) -> None:

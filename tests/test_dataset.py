@@ -86,6 +86,12 @@ class TestAssembleDataset:
         csv_path = tmp_path / "telemetry" / "cable_single.csv"
         with csv_path.open("r", encoding="utf-8") as f:
             header = f.readline().strip().split(",")
-        for required in ("time_h", "current_A", "ambient_C", "conductor_C",
-                          "e_field_V_per_m", "cumulative_damage"):
+        for required in (
+            "time_h",
+            "current_A",
+            "ambient_C",
+            "conductor_C",
+            "e_field_V_per_m",
+            "cumulative_damage",
+        ):
             assert required in header

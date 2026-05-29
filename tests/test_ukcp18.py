@@ -16,7 +16,6 @@ from gridforge.data.ukcp18 import (
     list_scenarios,
 )
 
-
 # ---------------------------------------------------------------------------
 # Loader basics
 # ---------------------------------------------------------------------------
@@ -27,8 +26,7 @@ class TestLoader:
 
     def test_data_file_exists(self) -> None:
         assert DATA_FILE.exists(), (
-            f"placeholder CSV missing at {DATA_FILE} — run "
-            "data/climate/_generate_placeholder.py"
+            f"placeholder CSV missing at {DATA_FILE} — run " "data/climate/_generate_placeholder.py"
         )
 
     def test_table_loads(self) -> None:
@@ -60,7 +58,7 @@ class TestSingleLookup:
         assert d.scenario == "RCP8.5"
         assert d.period == 2080
         assert d.delta_ambient_C > 0.0  # warming, not cooling
-        assert d.delta_moisture < 0.0   # drying, not wetting
+        assert d.delta_moisture < 0.0  # drying, not wetting
 
     def test_repeated_lookup_is_cached(self) -> None:
         # Two calls should return identical objects (same id via lru_cache).
@@ -123,7 +121,9 @@ class TestMonotonicity:
     @pytest.mark.parametrize("scenario", KNOWN_SCENARIOS)
     @pytest.mark.parametrize("period", KNOWN_PERIODS)
     def test_southern_regions_warmer_than_northern(
-        self, scenario: str, period: int,
+        self,
+        scenario: str,
+        period: int,
     ) -> None:
         # London (UKI) should warm more than Scotland (UKM) under all
         # scenarios and periods.
@@ -137,15 +137,16 @@ class TestMonotonicity:
     @pytest.mark.parametrize("scenario", KNOWN_SCENARIOS)
     @pytest.mark.parametrize("period", KNOWN_PERIODS)
     def test_moisture_changes_are_non_positive(
-        self, scenario: str, period: int,
+        self,
+        scenario: str,
+        period: int,
     ) -> None:
         # Placeholder model: every region dries (or stays the same) in
         # the projected mean. None should wet.
         for region_code, _ in list_regions():
             d = get_climate_deltas(region_code, scenario, period).delta_moisture
             assert d <= 0.0, (
-                f"{region_code}/{scenario}/{period}: moisture delta "
-                f"{d:+.4f} should be <= 0"
+                f"{region_code}/{scenario}/{period}: moisture delta " f"{d:+.4f} should be <= 0"
             )
 
 
@@ -162,8 +163,18 @@ class TestDiscoveryHelpers:
         assert len(regions) == 12
         codes = {code for code, _ in regions}
         assert codes == {
-            "UKC", "UKD", "UKE", "UKF", "UKG", "UKH",
-            "UKI", "UKJ", "UKK", "UKL", "UKM", "UKN",
+            "UKC",
+            "UKD",
+            "UKE",
+            "UKF",
+            "UKG",
+            "UKH",
+            "UKI",
+            "UKJ",
+            "UKK",
+            "UKL",
+            "UKM",
+            "UKN",
         }
 
     def test_list_regions_is_sorted_by_code(self) -> None:

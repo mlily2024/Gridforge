@@ -13,21 +13,20 @@ import pytest
 
 from gridforge.physics.cable_archetype import (
     ARCHETYPES,
+    UK_11KV_95MM2_CU_XLPE_3CORE,
     UK_11KV_240MM2_CU_PILC_3CORE,
     UK_11KV_240MM2_XLPE_3CORE,
     UK_11KV_300MM2_CU_XLPE_1CORE,
-    UK_11KV_95MM2_CU_XLPE_3CORE,
     UK_TYPICAL_INSTALLATION,
     archetype_by_name,
 )
 from gridforge.physics.thermal import solve_steady_state
 
-
 REPRESENTATIVE_CURRENTS = {
     "11kV_240mm2_Cu_XLPE_3c": 350.0,
-    "11kV_95mm2_Cu_XLPE_3c": 180.0,    # smaller cable, lower nameplate
-    "11kV_300mm2_Cu_XLPE_1c": 250.0,   # single-core sees one-phase loss
-    "11kV_240mm2_Cu_PILC_3c": 300.0,   # PILC slightly derated vs XLPE
+    "11kV_95mm2_Cu_XLPE_3c": 180.0,  # smaller cable, lower nameplate
+    "11kV_300mm2_Cu_XLPE_1c": 250.0,  # single-core sees one-phase loss
+    "11kV_240mm2_Cu_PILC_3c": 300.0,  # PILC slightly derated vs XLPE
 }
 
 
@@ -69,23 +68,19 @@ class TestEachArchetype:
 
     def test_240mm2_XLPE_3c(self) -> None:
         geom, mat = UK_11KV_240MM2_XLPE_3CORE
-        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_240mm2_Cu_XLPE_3c"],
-                    "240mm2_XLPE_3c")
+        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_240mm2_Cu_XLPE_3c"], "240mm2_XLPE_3c")
 
     def test_95mm2_XLPE_3c(self) -> None:
         geom, mat = UK_11KV_95MM2_CU_XLPE_3CORE
-        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_95mm2_Cu_XLPE_3c"],
-                    "95mm2_XLPE_3c")
+        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_95mm2_Cu_XLPE_3c"], "95mm2_XLPE_3c")
 
     def test_300mm2_XLPE_1c(self) -> None:
         geom, mat = UK_11KV_300MM2_CU_XLPE_1CORE
-        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_300mm2_Cu_XLPE_1c"],
-                    "300mm2_XLPE_1c")
+        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_300mm2_Cu_XLPE_1c"], "300mm2_XLPE_1c")
 
     def test_240mm2_PILC_3c(self) -> None:
         geom, mat = UK_11KV_240MM2_CU_PILC_3CORE
-        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_240mm2_Cu_PILC_3c"],
-                    "240mm2_PILC_3c")
+        self._check(geom, mat, REPRESENTATIVE_CURRENTS["11kV_240mm2_Cu_PILC_3c"], "240mm2_PILC_3c")
 
 
 class TestArchetypeDifferentiation:
@@ -96,10 +91,8 @@ class TestArchetypeDifferentiation:
         I = 200.0
         big_geom, big_mat = UK_11KV_240MM2_XLPE_3CORE
         small_geom, small_mat = UK_11KV_95MM2_CU_XLPE_3CORE
-        big = solve_steady_state(I, 11_000.0, big_geom, big_mat,
-                                  UK_TYPICAL_INSTALLATION)
-        small = solve_steady_state(I, 11_000.0, small_geom, small_mat,
-                                    UK_TYPICAL_INSTALLATION)
+        big = solve_steady_state(I, 11_000.0, big_geom, big_mat, UK_TYPICAL_INSTALLATION)
+        small = solve_steady_state(I, 11_000.0, small_geom, small_mat, UK_TYPICAL_INSTALLATION)
         assert small.conductor_temp_C > big.conductor_temp_C
 
     def test_PILC_warmer_than_XLPE_at_same_current(self) -> None:
@@ -108,10 +101,8 @@ class TestArchetypeDifferentiation:
         I = 250.0
         xlpe_geom, xlpe_mat = UK_11KV_240MM2_XLPE_3CORE
         pilc_geom, pilc_mat = UK_11KV_240MM2_CU_PILC_3CORE
-        xlpe = solve_steady_state(I, 11_000.0, xlpe_geom, xlpe_mat,
-                                   UK_TYPICAL_INSTALLATION)
-        pilc = solve_steady_state(I, 11_000.0, pilc_geom, pilc_mat,
-                                   UK_TYPICAL_INSTALLATION)
+        xlpe = solve_steady_state(I, 11_000.0, xlpe_geom, xlpe_mat, UK_TYPICAL_INSTALLATION)
+        pilc = solve_steady_state(I, 11_000.0, pilc_geom, pilc_mat, UK_TYPICAL_INSTALLATION)
         assert pilc.conductor_temp_C > xlpe.conductor_temp_C
 
 

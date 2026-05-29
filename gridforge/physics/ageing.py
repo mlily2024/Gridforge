@@ -40,7 +40,6 @@ from dataclasses import dataclass
 
 import numpy as np
 
-
 BOLTZMANN_eV_PER_K: float = 8.617333262e-5  # k_B in eV/K
 KELVIN_OFFSET: float = 273.15
 SECONDS_PER_YEAR: float = 365.25 * 24.0 * 3600.0
@@ -67,9 +66,9 @@ class CrineParameters:
 
     n_voltage_endurance: float = 11.0
     activation_energy_eV: float = 1.1
-    E_ref_V_per_m: float = 4.0e6        # 4 MV/m, typical XLPE design field
+    E_ref_V_per_m: float = 4.0e6  # 4 MV/m, typical XLPE design field
     T_ref_C: float = 90.0
-    L_ref_years: float = 40.0           # XLPE design life
+    L_ref_years: float = 40.0  # XLPE design life
 
 
 def life_at_constant_stress(
@@ -83,9 +82,7 @@ def life_at_constant_stress(
         raise ValueError("electric field must be strictly positive")
     T = temperature_C + KELVIN_OFFSET
     T_ref = p.T_ref_C + KELVIN_OFFSET
-    arrhenius = np.exp(
-        (p.activation_energy_eV / BOLTZMANN_eV_PER_K) * (1.0 / T - 1.0 / T_ref)
-    )
+    arrhenius = np.exp((p.activation_energy_eV / BOLTZMANN_eV_PER_K) * (1.0 / T - 1.0 / T_ref))
     field_factor = (p.E_ref_V_per_m / e_field_V_per_m) ** p.n_voltage_endurance
     L_years = p.L_ref_years * field_factor * arrhenius
     return float(L_years * SECONDS_PER_YEAR)
@@ -130,9 +127,7 @@ def cumulative_damage(
     if not np.all(np.diff(times_s) > 0.0):
         raise ValueError("times_s must be strictly increasing")
 
-    rates = np.array(
-        [damage_rate(float(e), float(T), params) for e, T in zip(e_arr, T_arr)]
-    )
+    rates = np.array([damage_rate(float(e), float(T), params) for e, T in zip(e_arr, T_arr)])
     # Trapezoidal cumulative integral
     dt = np.diff(times_s)
     avg_rate = 0.5 * (rates[:-1] + rates[1:])
@@ -170,6 +165,9 @@ def remaining_useful_life_years(
     params: CrineParameters | None = None,
 ) -> float:
     """RUL in years under constant forward stress."""
-    return remaining_useful_life(
-        current_damage, forward_e_field_V_per_m, forward_temperature_C, params
-    ) / SECONDS_PER_YEAR
+    return (
+        remaining_useful_life(
+            current_damage, forward_e_field_V_per_m, forward_temperature_C, params
+        )
+        / SECONDS_PER_YEAR
+    )

@@ -31,8 +31,8 @@ def diurnal_current(t_s: float, peak_A: float = 350.0, base_A: float = 100.0) ->
     """UK-typical residential load profile, single 24-hour period."""
     hour_of_day = (t_s / 3600.0) % 24.0
     # Two-peak shape using superposed Gaussians around 08:00 and 18:00
-    morning = np.exp(-((hour_of_day - 8.0) / 2.0) ** 2)
-    evening = np.exp(-((hour_of_day - 18.0) / 2.5) ** 2) * 1.3
+    morning = np.exp(-(((hour_of_day - 8.0) / 2.0) ** 2))
+    evening = np.exp(-(((hour_of_day - 18.0) / 2.5) ** 2)) * 1.3
     shape = max(morning, evening)
     return float(base_A + (peak_A - base_A) * shape)
 
@@ -75,12 +75,19 @@ def main() -> int:
         writer = csv.writer(f)
         writer.writerow(["time_h", "current_A", "conductor_C", "total_loss_W_per_m"])
         for t, T, L in zip(times, result.conductor_temp_C, result.total_loss_W_per_m):
-            writer.writerow([round(t / 3600.0, 4), round(diurnal_current(float(t)), 2),
-                             round(float(T), 4), round(float(L), 4)])
+            writer.writerow(
+                [
+                    round(t / 3600.0, 4),
+                    round(diurnal_current(float(t)), 2),
+                    round(float(T), 4),
+                    round(float(L), 4),
+                ]
+            )
     print(f"Saved table:  {csv_path}")
 
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -97,12 +104,17 @@ def main() -> int:
     axes[0].grid(True, alpha=0.3, linestyle=":")
     axes[0].set_title("UK 11 kV 240 mm^2 XLPE — diurnal load response")
 
-    axes[1].plot(times_h, result.conductor_temp_C, color="#d62728", linewidth=1.2,
-                 label="Conductor")
-    axes[1].axhline(install.ambient_soil_temp_C, color="grey", linestyle=":",
-                    linewidth=0.7, label="Ambient soil")
-    axes[1].axhline(90.0, color="r", linestyle="--", linewidth=0.6,
-                    label="XLPE 90 degC limit")
+    axes[1].plot(
+        times_h, result.conductor_temp_C, color="#d62728", linewidth=1.2, label="Conductor"
+    )
+    axes[1].axhline(
+        install.ambient_soil_temp_C,
+        color="grey",
+        linestyle=":",
+        linewidth=0.7,
+        label="Ambient soil",
+    )
+    axes[1].axhline(90.0, color="r", linestyle="--", linewidth=0.6, label="XLPE 90 degC limit")
     axes[1].set_xlabel("Time [hours]")
     axes[1].set_ylabel("Temperature [degC]")
     axes[1].grid(True, alpha=0.3, linestyle=":")

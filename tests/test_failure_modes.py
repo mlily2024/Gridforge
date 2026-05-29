@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 
 from gridforge.data.failure_modes import (
+    MODES,
     AcceleratedDielectricMode,
     HealthyMode,
-    MODES,
     ThermalAgeingMode,
     WaterIngressMode,
     make_failure_mode,
@@ -72,11 +72,7 @@ class TestAcceleratedDielectric:
         m = AcceleratedDielectricMode(impulse_per_year=200.0, seed=0)
         # Sample 5 years at hourly resolution
         n_hours = 5 * 8766
-        events = sum(
-            1
-            for h in range(n_hours)
-            if m.field_multiplier(h * 3600.0) > 1.5
-        )
+        events = sum(1 for h in range(n_hours) if m.field_multiplier(h * 3600.0) > 1.5)
         # Expected ~ 1000 events; allow Poisson 5-sigma envelope
         assert 700 < events < 1300
 
@@ -97,7 +93,10 @@ class TestAcceleratedDielectric:
 class TestRegistry:
     def test_all_four_modes_registered(self) -> None:
         assert set(MODES) == {
-            "healthy", "water_ingress", "thermal_ageing", "accelerated_dielectric"
+            "healthy",
+            "water_ingress",
+            "thermal_ageing",
+            "accelerated_dielectric",
         }
 
     def test_make_unknown_raises(self) -> None:

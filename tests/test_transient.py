@@ -66,9 +66,7 @@ class TestTransientSolver:
             mat=self.mat,
             install=self.install,
         )
-        assert result.conductor_temp_C[-1] == pytest.approx(
-            ss.conductor_temp_C, abs=0.5
-        )
+        assert result.conductor_temp_C[-1] == pytest.approx(ss.conductor_temp_C, abs=0.5)
 
     def test_step_response_first_order_shape(self) -> None:
         """Step from 0 A to 400 A produces approximate first-order rise."""

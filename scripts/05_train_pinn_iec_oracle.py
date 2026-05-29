@@ -39,7 +39,6 @@ from gridforge.physics.cable_archetype import (
 from gridforge.physics.thermal import InstallationConditions, solve_steady_state
 from gridforge.training.train import (
     TrainingConfig,
-    generate_training_data,
     train_pinn,
 )
 
@@ -63,8 +62,10 @@ def main() -> int:
 
     torch.manual_seed(cfg.seed)
     model = IECSurrogatePINN(n_hidden=4, hidden_size=64, n_freqs=4)
-    print(f"Architecture     : {model.n_parameters():,} parameters "
-          f"(4 hidden x 64, sinusoidal n_freqs=4)")
+    print(
+        f"Architecture     : {model.n_parameters():,} parameters "
+        f"(4 hidden x 64, sinusoidal n_freqs=4)"
+    )
     print(f"Train / Val      : {cfg.n_train} / {cfg.n_val} samples")
     print(f"Epochs           : {cfg.n_epochs}")
     print(f"Batch size       : {cfg.batch_size}")
@@ -78,8 +79,10 @@ def main() -> int:
     print()
     print("=== GF-003 result ===")
     print(f"  Final val RMSE         : {result.final_val_rmse_C:.4f} degC")
-    print(f"  Best val RMSE          : {result.best_val_rmse_C:.4f} degC "
-          f"at epoch {result.best_epoch}")
+    print(
+        f"  Best val RMSE          : {result.best_val_rmse_C:.4f} degC "
+        f"at epoch {result.best_epoch}"
+    )
     print(f"  Physics residual RMS   : {result.final_physics_residual_RMS:.4e}")
     target = 0.5
     pass_str = "PASS" if result.best_val_rmse_C <= target else "FAIL"
@@ -90,8 +93,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     history_path = out_dir / "training_history.csv"
-    keys = ["epoch", "loss_total", "loss_data", "loss_physics",
-            "val_rmse_C", "w_phys"]
+    keys = ["epoch", "loss_total", "loss_data", "loss_physics", "val_rmse_C", "w_phys"]
     with history_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(keys)
@@ -119,7 +121,9 @@ def main() -> int:
         sub_sol = solve_steady_state(
             current_per_phase_A=float(Is[i]),
             line_voltage_V_rms=cfg.line_voltage_V_rms,
-            geom=geom, mat=mat, install=sub,
+            geom=geom,
+            mat=mat,
+            install=sub,
         )
         oracle_T[i] = sub_sol.conductor_temp_C
     pinn_T = surrogate(Is, ambs, rhos)
@@ -132,14 +136,16 @@ def main() -> int:
         w = csv.writer(f)
         w.writerow(["I_A", "ambient_C", "rho_t_KmW", "oracle_C", "pinn_C", "error_C"])
         for i in range(n_check):
-            w.writerow([
-                round(float(Is[i]), 2),
-                round(float(ambs[i]), 3),
-                round(float(rhos[i]), 4),
-                round(float(oracle_T[i]), 4),
-                round(float(pinn_T[i]), 4),
-                round(float(err[i]), 4),
-            ])
+            w.writerow(
+                [
+                    round(float(Is[i]), 2),
+                    round(float(ambs[i]), 3),
+                    round(float(rhos[i]), 4),
+                    round(float(oracle_T[i]), 4),
+                    round(float(pinn_T[i]), 4),
+                    round(float(err[i]), 4),
+                ]
+            )
     print(f"  Saved validation       : {val_path}")
 
     # Save model state dict for downstream use
@@ -150,6 +156,7 @@ def main() -> int:
     # Plots
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
@@ -168,8 +175,7 @@ def main() -> int:
     axes[0].set_title("Training loss components")
 
     axes[1].plot(epochs, result.history["val_rmse_C"])
-    axes[1].axhline(target, color="r", linestyle="--", linewidth=0.8,
-                     label=f"target {target} degC")
+    axes[1].axhline(target, color="r", linestyle="--", linewidth=0.8, label=f"target {target} degC")
     axes[1].set_xlabel("Epoch")
     axes[1].set_ylabel("Val RMSE [degC]")
     axes[1].grid(True, alpha=0.3, linestyle=":")

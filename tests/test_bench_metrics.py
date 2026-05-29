@@ -29,6 +29,7 @@ class TestBrier:
 
     def test_empty(self) -> None:
         import math
+
         assert math.isnan(brier_score([], []))
 
 
@@ -40,6 +41,7 @@ class TestAUCPR:
 
     def test_no_positives_returns_nan(self) -> None:
         import math
+
         assert math.isnan(auc_pr([0, 0, 0, 0], [0.1, 0.2, 0.3, 0.4]))
 
     def test_constant_score_neutral(self) -> None:
@@ -72,9 +74,8 @@ class TestPrecisionAtRecall:
 
     def test_no_positives_nan(self) -> None:
         import math
-        assert math.isnan(
-            precision_at_recall([0, 0, 0], [0.1, 0.2, 0.3])
-        )
+
+        assert math.isnan(precision_at_recall([0, 0, 0], [0.1, 0.2, 0.3]))
 
 
 class TestQuantileLoss:

@@ -122,9 +122,7 @@ class DeepEnsemblePINN:
         d.mkdir(parents=True, exist_ok=True)
         for i, m in enumerate(self.members):
             torch.save(m.model.state_dict(), d / f"member_{i:02d}.pt")
-        (d / _MANIFEST_NAME).write_text(
-            json.dumps({"n_members": self.n_members}), encoding="utf-8"
-        )
+        (d / _MANIFEST_NAME).write_text(json.dumps({"n_members": self.n_members}), encoding="utf-8")
 
     @classmethod
     def load(

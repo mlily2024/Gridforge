@@ -40,9 +40,7 @@ class TestDeepEnsemble:
 
     def test_call_returns_mean(self, small_ensemble):
         ensemble, _ = small_ensemble
-        assert np.allclose(
-            ensemble(400.0, 15.0, 1.0), ensemble.predict(400.0, 15.0, 1.0).mean
-        )
+        assert np.allclose(ensemble(400.0, 15.0, 1.0), ensemble.predict(400.0, 15.0, 1.0).mean)
 
     def test_vectorised(self, small_ensemble):
         ensemble, _ = small_ensemble
@@ -64,9 +62,7 @@ class TestDeepEnsemble:
         # exact (small) training budget. Tight accuracy is GF-003's job.
         ensemble, cfg = small_ensemble
         geom, mat = UK_11KV_240MM2_XLPE_3CORE
-        X, y = generate_training_data(
-            60, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=999
-        )
+        X, y = generate_training_data(60, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=999)
         y = y.reshape(-1)
         p = ensemble.predict(X[:, 0], X[:, 1], X[:, 2])
         model_rmse = float(np.sqrt(np.mean((p.mean - y) ** 2)))
@@ -76,9 +72,7 @@ class TestDeepEnsemble:
     def test_coverage_in_unit_interval(self, small_ensemble):
         ensemble, cfg = small_ensemble
         geom, mat = UK_11KV_240MM2_XLPE_3CORE
-        X, y = generate_training_data(
-            80, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=12345
-        )
+        X, y = generate_training_data(80, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=12345)
         cov = coverage(ensemble, X, y)
         assert 0.0 <= cov <= 1.0
 
@@ -87,9 +81,7 @@ class TestDeepEnsemble:
         ensemble.save(tmp_path / "ens")
         loaded = DeepEnsemblePINN.load(tmp_path / "ens")
         assert loaded.n_members == ensemble.n_members
-        assert np.allclose(
-            ensemble(400.0, 15.0, 1.0), loaded(400.0, 15.0, 1.0), atol=1e-5
-        )
+        assert np.allclose(ensemble(400.0, 15.0, 1.0), loaded(400.0, 15.0, 1.0), atol=1e-5)
 
     def test_single_member_zero_std(self):
         cfg = TrainingConfig(n_train=120, n_val=60, n_epochs=20, batch_size=64, seed=3)

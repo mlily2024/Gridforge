@@ -31,7 +31,6 @@ from gridforge.physics.cable_archetype import (
 )
 from gridforge.physics.thermal import (
     CableGeometry,
-    CableMaterials,
     InstallationConditions,
     ac_resistance_at_temp,
     dielectric_loss_per_phase,
@@ -41,10 +40,10 @@ from gridforge.physics.thermal import (
     thermal_resistance_T4,
 )
 
-
 # ---------------------------------------------------------------------------
 # Component-level checks
 # ---------------------------------------------------------------------------
+
 
 class TestThermalResistanceComponents:
     """T1, T3, T4 against hand-computed values for the canonical archetype."""
@@ -77,9 +76,7 @@ class TestThermalResistanceComponents:
         # 2u = 2 * 0.8 / 0.070 = 22.857
         # T4 = (1.0 / 2pi) * ln(22.857 + sqrt(22.857^2 - 1))
         two_u = 2.0 * 0.8 / 0.070
-        expected = (1.0 / (2.0 * math.pi)) * math.log(
-            two_u + math.sqrt(two_u * two_u - 1.0)
-        )
+        expected = (1.0 / (2.0 * math.pi)) * math.log(two_u + math.sqrt(two_u * two_u - 1.0))
         T4 = thermal_resistance_T4(self.geom, self.install)
         assert T4 == pytest.approx(expected, rel=1e-9)
         assert 0.4 < T4 < 1.0
@@ -120,6 +117,7 @@ class TestThermalResistanceComponents:
 # Conductor resistance
 # ---------------------------------------------------------------------------
 
+
 class TestConductorResistance:
     """A.c. resistance temperature correction and skin-effect factor."""
 
@@ -148,6 +146,7 @@ class TestConductorResistance:
 # Dielectric loss
 # ---------------------------------------------------------------------------
 
+
 class TestDielectricLoss:
     def setup_method(self) -> None:
         _, self.mat = UK_11KV_240MM2_XLPE_3CORE
@@ -169,6 +168,7 @@ class TestDielectricLoss:
 # ---------------------------------------------------------------------------
 # Steady-state solver — internal consistency
 # ---------------------------------------------------------------------------
+
 
 class TestSteadyStateSolver:
     """Solver convergence, scaling, and physical-balance checks."""
@@ -270,9 +270,7 @@ class TestSteadyStateSolver:
         # subtraction it should match.
         reconstructed_ambient = sol.soil_interface_temp_C
         # Tolerance matches the solver's fixed-point convergence threshold.
-        assert reconstructed_ambient == pytest.approx(
-            self.install.ambient_soil_temp_C, abs=1e-3
-        )
+        assert reconstructed_ambient == pytest.approx(self.install.ambient_soil_temp_C, abs=1e-3)
         assert rise > 0.0
 
     def test_temperature_in_engineering_range_at_typical_loading(self) -> None:

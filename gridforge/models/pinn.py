@@ -88,7 +88,7 @@ class SinusoidalEncoding:
         # x shape (..., d). Output shape (..., d * (1 + 2 * n_freqs)).
         feats = [x]
         for k in range(self.n_freqs):
-            scale = (2.0 ** k) * 3.141592653589793
+            scale = (2.0**k) * 3.141592653589793
             feats.append(torch.sin(scale * x))
             feats.append(torch.cos(scale * x))
         return torch.cat(feats, dim=-1)

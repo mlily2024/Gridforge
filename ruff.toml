@@ -1,0 +1,23 @@
+# Ruff configuration for the GridForge subpackage.
+#
+# A ruff.toml takes precedence over the [tool.ruff] table in pyproject.toml,
+# so this is the active ruff config for everything under gridforge/. Black
+# formatting config still lives in pyproject.toml ([tool.black]).
+
+line-length = 100
+target-version = "py310"
+
+[lint]
+select = ["E", "F", "W", "I"]
+# E501 (line length) is delegated to black. E741 (ambiguous names l/I/O) is a
+# deliberate physics convention in this package -- e.g. I denotes current --
+# not a genuine ambiguity, so it is not enforced.
+ignore = ["E501", "E741"]
+
+[lint.per-file-ignores]
+# Demo/benchmark scripts insert the package root on sys.path before importing
+# gridforge, so their module-level imports legitimately follow that setup.
+"scripts/*" = ["E402"]
+# Test modules importorskip("torch") before importing gridforge, so their
+# module-level imports legitimately follow that guard.
+"tests/*" = ["E402"]

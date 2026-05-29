@@ -16,15 +16,14 @@ generator can resolve it by name.
 from __future__ import annotations
 
 from .thermal import (
-    CableGeometry,
-    CableMaterials,
-    InstallationConditions,
     RHO_T_HDPE,
     RHO_T_PILC,
     RHO_T_SOIL_TYPICAL_UK,
     RHO_T_XLPE,
+    CableGeometry,
+    CableMaterials,
+    InstallationConditions,
 )
-
 
 # ---------------------------------------------------------------------------
 # 1) 11 kV 240 mm^2 Cu XLPE 3-core, individually screened cores, HDPE jacket
@@ -177,17 +176,17 @@ UK_11KV_240MM2_CU_PILC_3CORE_GEOM = CableGeometry(
     d_c_mm=18.5,
     t_i_mm=3.4,
     t_j_mm=2.5,
-    D_e_mm=72.0,    # slightly larger due to lead sheath thickness
+    D_e_mm=72.0,  # slightly larger due to lead sheath thickness
     n_conductors=3,
 )
 
 UK_11KV_240MM2_CU_PILC_3CORE_MAT = CableMaterials(
     rho_t_insulation_KmW=RHO_T_PILC,
-    rho_t_jacket_KmW=RHO_T_HDPE,    # outer serving over the lead sheath
+    rho_t_jacket_KmW=RHO_T_HDPE,  # outer serving over the lead sheath
     R_dc_20C_ohm_per_m=7.55e-5,
     alpha_per_C=3.93e-3,
     R_ac_dc_ratio=1.02,
-    capacitance_F_per_m=2.5e-10,    # paper has higher relative permittivity
+    capacitance_F_per_m=2.5e-10,  # paper has higher relative permittivity
     tan_delta=3.5e-3,
 )
 
@@ -229,7 +228,5 @@ def archetype_by_name(name: str) -> tuple[CableGeometry, CableMaterials]:
     Raises KeyError with the available names if `name` is not registered.
     """
     if name not in ARCHETYPES:
-        raise KeyError(
-            f"unknown archetype '{name}'; available: {sorted(ARCHETYPES)}"
-        )
+        raise KeyError(f"unknown archetype '{name}'; available: {sorted(ARCHETYPES)}")
     return ARCHETYPES[name]

@@ -39,7 +39,6 @@ from ..physics.thermal import (
     solve_steady_state,
 )
 from .loss import (
-    PhysicsConstants,
     adaptive_loss_weights,
     combined_loss,
     precompute_physics_constants,
@@ -63,9 +62,9 @@ class TrainingConfig:
     n_epochs: int = 1500
     batch_size: int = 256
     learning_rate: float = 2.0e-3
-    physics_weight_init: float = 1.0e-3   # start small, adapt up
+    physics_weight_init: float = 1.0e-3  # start small, adapt up
     weight_update_every: int = 50
-    weight_update_alpha: float = 0.9       # EMA factor
+    weight_update_alpha: float = 0.9  # EMA factor
     I_range_A: tuple[float, float] = (50.0, 600.0)
     ambient_range_C: tuple[float, float] = (0.0, 25.0)
     rho_t_range_KmW: tuple[float, float] = (0.7, 2.0)
@@ -145,14 +144,14 @@ def train_pinn(
         install = UK_TYPICAL_INSTALLATION
 
     constants = precompute_physics_constants(
-        geom=geom, mat=mat, install=install,
+        geom=geom,
+        mat=mat,
+        install=install,
         line_voltage_V_rms=cfg.line_voltage_V_rms,
         sheath_loss_factor=cfg.sheath_loss_factor,
     )
 
-    X_train, y_train = generate_training_data(
-        cfg.n_train, cfg, geom, mat, install, seed=cfg.seed
-    )
+    X_train, y_train = generate_training_data(cfg.n_train, cfg, geom, mat, install, seed=cfg.seed)
     X_val, y_val = generate_training_data(
         cfg.n_val, cfg, geom, mat, install, seed=cfg.seed + 1_000_003
     )
@@ -164,8 +163,12 @@ def train_pinn(
 
     optimiser = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
     history: dict[str, list[float]] = {
-        "epoch": [], "loss_total": [], "loss_data": [], "loss_physics": [],
-        "val_rmse_C": [], "w_phys": [],
+        "epoch": [],
+        "loss_total": [],
+        "loss_data": [],
+        "loss_physics": [],
+        "val_rmse_C": [],
+        "w_phys": [],
     }
     w_phys = float(cfg.physics_weight_init)
     best_val = float("inf")
@@ -186,9 +189,7 @@ def train_pinn(
             yb = yt[idx]
 
             T_pred = model(xb)
-            losses = combined_loss(
-                T_pred, yb, xb, constants, w_data=1.0, w_phys=w_phys
-            )
+            losses = combined_loss(T_pred, yb, xb, constants, w_data=1.0, w_phys=w_phys)
 
             optimiser.zero_grad()
             losses["total"].backward()
@@ -202,9 +203,7 @@ def train_pinn(
         # Adaptive weight update
         if (epoch + 1) % cfg.weight_update_every == 0:
             T_pred_full = model(Xt)
-            losses_full = combined_loss(
-                T_pred_full, yt, Xt, constants, w_data=1.0, w_phys=w_phys
-            )
+            losses_full = combined_loss(T_pred_full, yt, Xt, constants, w_data=1.0, w_phys=w_phys)
             w_phys = adaptive_loss_weights(
                 losses_full["data"],
                 losses_full["physics"],
@@ -245,6 +244,7 @@ def train_pinn(
     with torch.no_grad():
         T_val_pred = model(Xv)
         from .loss import physics_residual
+
         res = physics_residual(T_val_pred, Xv, constants)
         phys_rms = float(res.pow(2).mean().sqrt().item())
 

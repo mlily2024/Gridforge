@@ -37,7 +37,6 @@ from ..physics.ageing import (
     damage_rate,
 )
 from ..physics.cable_archetype import (
-    ARCHETYPES,
     UK_11KV_240MM2_XLPE_3CORE,
     UK_TYPICAL_INSTALLATION,
     archetype_by_name,
@@ -125,9 +124,7 @@ def simulate_cable_year(
         install = UK_TYPICAL_INSTALLATION
 
     archetype_name_resolved = (
-        spec.archetype_name
-        if spec.archetype_name is not None
-        else "11kV_240mm2_Cu_XLPE_3c"
+        spec.archetype_name if spec.archetype_name is not None else "11kV_240mm2_Cu_XLPE_3c"
     )
 
     # Pre-compute physics constants

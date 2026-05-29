@@ -66,6 +66,7 @@ def _stochastic_noise(t_s: float, seed: int, amplitude: float = 0.02) -> float:
 # Profile library
 # ---------------------------------------------------------------------------
 
+
 def residential(t_s: float, peak_A: float, base_A: float, seed: int = 0) -> float:
     """UK domestic profile — two daily peaks (morning ~08:00, evening ~18:00).
 
@@ -80,8 +81,8 @@ def residential(t_s: float, peak_A: float, base_A: float, seed: int = 0) -> floa
     evening_peak_h = 19.0 if is_weekend else 18.0
     morning_amp = 0.6 if is_weekend else 0.7
 
-    morning = morning_amp * np.exp(-((hour_of_day - morning_peak_h) / 2.0) ** 2)
-    evening = np.exp(-((hour_of_day - evening_peak_h) / 2.5) ** 2)
+    morning = morning_amp * np.exp(-(((hour_of_day - morning_peak_h) / 2.0) ** 2))
+    evening = np.exp(-(((hour_of_day - evening_peak_h) / 2.5) ** 2))
     shape = max(morning, evening)
 
     seasonal = _seasonal_factor(t_s)
@@ -104,8 +105,12 @@ def commercial(t_s: float, peak_A: float, base_A: float, seed: int = 0) -> float
         shape = 0.1
     else:
         # Plateau with smoothed edges (logistic-like)
-        shape = 1.0 / (1.0 + np.exp(-3.0 * (hour_of_day - 7.5))) * \
-                1.0 / (1.0 + np.exp(-3.0 * (18.5 - hour_of_day)))
+        shape = (
+            1.0
+            / (1.0 + np.exp(-3.0 * (hour_of_day - 7.5)))
+            * 1.0
+            / (1.0 + np.exp(-3.0 * (18.5 - hour_of_day)))
+        )
     seasonal = _seasonal_factor(t_s)
     noise = _stochastic_noise(t_s, seed)
     return float((base_A + (peak_A - base_A) * shape) * seasonal * noise)

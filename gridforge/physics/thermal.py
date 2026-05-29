@@ -39,7 +39,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import log, pi, sqrt
 
-
 # ---------------------------------------------------------------------------
 # Physical constants
 # ---------------------------------------------------------------------------
@@ -69,6 +68,7 @@ R_AC_DC_RATIO_DEFAULT: float = 1.02
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class CableGeometry:
     """Cable cross-sectional geometry.
@@ -77,11 +77,11 @@ class CableGeometry:
     cable with individually screened cores enclosed by a common outer jacket.
     """
 
-    d_c_mm: float           # conductor diameter
-    t_i_mm: float           # insulation thickness, conductor surface to screen
-    t_j_mm: float           # outer jacket thickness
-    D_e_mm: float           # cable overall outside diameter
-    n_conductors: int = 3   # load-carrying conductors
+    d_c_mm: float  # conductor diameter
+    t_i_mm: float  # insulation thickness, conductor surface to screen
+    t_j_mm: float  # outer jacket thickness
+    D_e_mm: float  # cable overall outside diameter
+    n_conductors: int = 3  # load-carrying conductors
 
 
 @dataclass(frozen=True)
@@ -90,11 +90,11 @@ class CableMaterials:
 
     rho_t_insulation_KmW: float = RHO_T_XLPE
     rho_t_jacket_KmW: float = RHO_T_HDPE
-    R_dc_20C_ohm_per_m: float = 7.55e-5     # 240 mm^2 Cu @ 20 degC, IEC 60228
-    alpha_per_C: float = COPPER_ALPHA       # temperature coefficient
+    R_dc_20C_ohm_per_m: float = 7.55e-5  # 240 mm^2 Cu @ 20 degC, IEC 60228
+    alpha_per_C: float = COPPER_ALPHA  # temperature coefficient
     R_ac_dc_ratio: float = R_AC_DC_RATIO_DEFAULT
-    capacitance_F_per_m: float = 2.0e-10    # ~0.2 uF/km, typical 11 kV XLPE
-    tan_delta: float = 1.0e-3               # XLPE dielectric loss tangent
+    capacitance_F_per_m: float = 2.0e-10  # ~0.2 uF/km, typical 11 kV XLPE
+    tan_delta: float = 1.0e-3  # XLPE dielectric loss tangent
 
 
 @dataclass(frozen=True)
@@ -137,6 +137,7 @@ class ThermalSolution:
 # Thermal-resistance components (IEC 60287-2-1)
 # ---------------------------------------------------------------------------
 
+
 def thermal_resistance_T1(geom: CableGeometry, mat: CableMaterials) -> float:
     """T1 — between conductor and screen, per phase [K.m/W].
 
@@ -178,9 +179,7 @@ def thermal_resistance_T4(geom: CableGeometry, install: InstallationConditions) 
     D_e_m = geom.D_e_mm * 1.0e-3
     two_u = 2.0 * install.burial_depth_m / D_e_m
     if two_u < 1.0:
-        raise ValueError(
-            f"cable too close to surface for IEC formula (2L_b/D_e = {two_u:.3f} < 1)"
-        )
+        raise ValueError(f"cable too close to surface for IEC formula (2L_b/D_e = {two_u:.3f} < 1)")
     return (install.soil_thermal_resistivity_KmW / (2.0 * pi)) * log(
         two_u + sqrt(two_u * two_u - 1.0)
     )
@@ -189,6 +188,7 @@ def thermal_resistance_T4(geom: CableGeometry, install: InstallationConditions) 
 # ---------------------------------------------------------------------------
 # Loss components
 # ---------------------------------------------------------------------------
+
 
 def dielectric_loss_per_phase(voltage_V_phase_to_ground: float, mat: CableMaterials) -> float:
     """Dielectric loss per phase per unit length [W/m].
@@ -200,7 +200,8 @@ def dielectric_loss_per_phase(voltage_V_phase_to_ground: float, mat: CableMateri
     return (
         OMEGA_50HZ
         * mat.capacitance_F_per_m
-        * voltage_V_phase_to_ground * voltage_V_phase_to_ground
+        * voltage_V_phase_to_ground
+        * voltage_V_phase_to_ground
         * mat.tan_delta
     )
 
@@ -218,6 +219,7 @@ def ac_resistance_at_temp(temperature_C: float, mat: CableMaterials) -> float:
 # ---------------------------------------------------------------------------
 # Steady-state solver
 # ---------------------------------------------------------------------------
+
 
 def solve_steady_state(
     current_per_phase_A: float,
@@ -312,9 +314,7 @@ def solve_steady_state(
         W_dielectric_W_per_m=W_d,
         I2R_loss_W_per_m=I2R_final,
         total_loss_W_per_m=total_W,
-        thermal_resistances=ThermalResistances(
-            T1_KmW=T1, T2_KmW=T2, T3_KmW=T3, T4_KmW=T4
-        ),
+        thermal_resistances=ThermalResistances(T1_KmW=T1, T2_KmW=T2, T3_KmW=T3, T4_KmW=T4),
         iterations=iteration,
         converged=converged,
     )

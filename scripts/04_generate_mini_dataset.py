@@ -49,7 +49,7 @@ DURATION_YEARS = 5.0
 # less, larger cables carry more.
 LOAD_ENVELOPE = {
     "11kV_240mm2_Cu_XLPE_3c": (350.0, 80.0),
-    "11kV_95mm2_Cu_XLPE_3c":  (180.0, 40.0),
+    "11kV_95mm2_Cu_XLPE_3c": (180.0, 40.0),
     "11kV_300mm2_Cu_XLPE_1c": (260.0, 60.0),
     "11kV_240mm2_Cu_PILC_3c": (300.0, 70.0),
 }
@@ -117,14 +117,15 @@ def main() -> int:
 
     specs = build_specs()
     print()
-    print(f"GridForge mini dataset — {len(specs)} cables, "
-          f"{DURATION_YEARS:.1f}-year hourly traces across 4 archetypes")
+    print(
+        f"GridForge mini dataset — {len(specs)} cables, "
+        f"{DURATION_YEARS:.1f}-year hourly traces across 4 archetypes"
+    )
     print(f"Output: {out_dir}")
     print()
 
     t0 = _time.time()
-    summary = assemble_dataset(specs, out_dir, name="gridforge-mini",
-                                progress_callback=progress)
+    summary = assemble_dataset(specs, out_dir, name="gridforge-mini", progress_callback=progress)
     elapsed = _time.time() - t0
     print()
     print(f"Done in {elapsed:.1f}s")

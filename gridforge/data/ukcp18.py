@@ -40,7 +40,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
-
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -52,8 +51,7 @@ from typing import Final
 #   gridforge/data/climate/ukcp18_placeholder_deltas.csv
 # i.e. up two parent dirs from this file's dir, then down into data/climate.
 DATA_FILE: Final[Path] = (
-    Path(__file__).resolve().parents[2]
-    / "data" / "climate" / "ukcp18_placeholder_deltas.csv"
+    Path(__file__).resolve().parents[2] / "data" / "climate" / "ukcp18_placeholder_deltas.csv"
 )
 
 KNOWN_SCENARIOS: Final[tuple[str, ...]] = ("RCP2.6", "RCP4.5", "RCP8.5")
@@ -100,8 +98,12 @@ def _load_table() -> dict[tuple[str, str, int], ClimateDeltas]:
     with DATA_FILE.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         expected = {
-            "region_code", "region_name", "scenario", "period",
-            "delta_ambient_C", "delta_moisture",
+            "region_code",
+            "region_name",
+            "scenario",
+            "period",
+            "delta_ambient_C",
+            "delta_moisture",
         }
         if reader.fieldnames is None or set(reader.fieldnames) != expected:
             raise ValueError(
@@ -150,13 +152,9 @@ def get_climate_deltas(
         ValueError: if any of the three keys is outside the available set.
     """
     if scenario not in KNOWN_SCENARIOS:
-        raise ValueError(
-            f"unknown scenario {scenario!r}; available: {list(KNOWN_SCENARIOS)}"
-        )
+        raise ValueError(f"unknown scenario {scenario!r}; available: {list(KNOWN_SCENARIOS)}")
     if period not in KNOWN_PERIODS:
-        raise ValueError(
-            f"unknown period {period!r}; available: {list(KNOWN_PERIODS)}"
-        )
+        raise ValueError(f"unknown period {period!r}; available: {list(KNOWN_PERIODS)}")
 
     table = _load_table()
     key = (region_code, scenario, period)
@@ -164,14 +162,9 @@ def get_climate_deltas(
         # Distinguish "unknown region" from "everything else missing"
         known_regions = sorted({r for (r, _, _) in table})
         if region_code not in known_regions:
-            raise ValueError(
-                f"unknown region {region_code!r}; "
-                f"available: {known_regions}"
-            )
+            raise ValueError(f"unknown region {region_code!r}; " f"available: {known_regions}")
         # Region known but combination missing — data file is partial
-        raise ValueError(
-            f"no row in UKCP18 deltas for {key!r} — data file may be incomplete"
-        )
+        raise ValueError(f"no row in UKCP18 deltas for {key!r} — data file may be incomplete")
     return table[key]
 
 

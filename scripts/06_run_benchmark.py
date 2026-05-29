@@ -67,10 +67,7 @@ def main() -> int:
     # ----- Print leaderboard table -----
     print()
     print(f"=== Leaderboard ({len(entries)} entries, {n_test} test cables) ===")
-    print(
-        f"{'Baseline':<22} {'Task':<22} {'Metric':<28} {'Score':>12} "
-        f"{'n':>6}  Secondary"
-    )
+    print(f"{'Baseline':<22} {'Task':<22} {'Metric':<28} {'Score':>12} " f"{'n':>6}  Secondary")
     print("-" * 110)
     for e in sorted(entries, key=lambda x: (x.task, x.baseline)):
         sec = " ".join(f"{k}={v:.4g}" for k, v in e.secondary_metrics.items())
@@ -92,6 +89,7 @@ def main() -> int:
         T4_VIRTUAL_SENSOR,
         T5_COUNTERFACTUAL,
     )
+
     higher_is_better_map = {
         T1_FAILURE_60D.name: T1_FAILURE_60D.higher_is_better,
         T2_RUL_REGRESSION.name: T2_RUL_REGRESSION.higher_is_better,
@@ -114,16 +112,28 @@ def main() -> int:
     csv_path = out_dir / "leaderboard.csv"
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "baseline", "task", "headline_metric", "score",
-            "n_samples", "secondary_metrics",
-        ])
+        writer.writerow(
+            [
+                "baseline",
+                "task",
+                "headline_metric",
+                "score",
+                "n_samples",
+                "secondary_metrics",
+            ]
+        )
         for e in entries:
             sec = ";".join(f"{k}={v}" for k, v in e.secondary_metrics.items())
-            writer.writerow([
-                e.baseline, e.task, e.headline_metric_name,
-                e.headline_metric_value, e.n_samples, sec,
-            ])
+            writer.writerow(
+                [
+                    e.baseline,
+                    e.task,
+                    e.headline_metric_name,
+                    e.headline_metric_value,
+                    e.n_samples,
+                    sec,
+                ]
+            )
     print()
     print(f"Saved leaderboard: {csv_path}")
     return 0

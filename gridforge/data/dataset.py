@@ -27,14 +27,11 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterable, List, Sequence
-
-import numpy as np
+from typing import List, Sequence
 
 from .cable_year import CableYearResult, CableYearSpec, simulate_cable_year
-
 
 SPLIT_TRAIN: str = "train"
 SPLIT_VAL: str = "val"
@@ -88,16 +85,18 @@ def write_telemetry(out_dir: Path, result: CableYearResult) -> Path:
         writer = csv.writer(f)
         writer.writerow(TELEMETRY_COLUMNS)
         for i in range(len(result.times_s)):
-            writer.writerow([
-                round(float(result.times_s[i] / 3600.0), 4),
-                round(float(result.current_A[i]), 3),
-                round(float(result.ambient_C[i]), 3),
-                round(float(result.moisture[i]), 4),
-                round(float(result.conductor_C[i]), 3),
-                round(float(result.e_field_V_per_m[i]), 1),
-                round(float(result.pd_rate_relative[i]), 4),
-                float(result.cumulative_damage[i]),
-            ])
+            writer.writerow(
+                [
+                    round(float(result.times_s[i] / 3600.0), 4),
+                    round(float(result.current_A[i]), 3),
+                    round(float(result.ambient_C[i]), 3),
+                    round(float(result.moisture[i]), 4),
+                    round(float(result.conductor_C[i]), 3),
+                    round(float(result.e_field_V_per_m[i]), 1),
+                    round(float(result.pd_rate_relative[i]), 4),
+                    float(result.cumulative_damage[i]),
+                ]
+            )
     return out_path
 
 
@@ -131,31 +130,35 @@ def assemble_dataset(
             else None
         )
 
-        manifest_rows.append({
-            "cable_id": spec.cable_id,
-            "split": split,
-            "archetype": result.archetype_name,
-            "load_profile": spec.load.profile_name,
-            "load_peak_A": spec.load.peak_A,
-            "load_base_A": spec.load.base_A,
-            "load_seed": spec.load.seed,
-            "weather_seed": spec.weather.seed,
-            "failure_mode": spec.failure_mode.name,
-            "duration_years": spec.duration_years,
-            "sample_period_s": spec.sample_period_s,
-            "line_voltage_V_rms": spec.line_voltage_V_rms,
-            "R_total_KmW": round(result.R_total_KmW, 6),
-            "C_cable_J_per_K_m": round(result.C_cable_J_per_K_m, 2),
-            "time_constant_s": round(result.time_constant_s, 1),
-            "n_samples": len(result.times_s),
-        })
-        truth_rows.append({
-            "cable_id": spec.cable_id,
-            "split": split,
-            "failure_time_s": result.failure_time_s,
-            "failure_year": failure_year,
-            "final_damage": float(result.cumulative_damage[-1]),
-        })
+        manifest_rows.append(
+            {
+                "cable_id": spec.cable_id,
+                "split": split,
+                "archetype": result.archetype_name,
+                "load_profile": spec.load.profile_name,
+                "load_peak_A": spec.load.peak_A,
+                "load_base_A": spec.load.base_A,
+                "load_seed": spec.load.seed,
+                "weather_seed": spec.weather.seed,
+                "failure_mode": spec.failure_mode.name,
+                "duration_years": spec.duration_years,
+                "sample_period_s": spec.sample_period_s,
+                "line_voltage_V_rms": spec.line_voltage_V_rms,
+                "R_total_KmW": round(result.R_total_KmW, 6),
+                "C_cable_J_per_K_m": round(result.C_cable_J_per_K_m, 2),
+                "time_constant_s": round(result.time_constant_s, 1),
+                "n_samples": len(result.times_s),
+            }
+        )
+        truth_rows.append(
+            {
+                "cable_id": spec.cable_id,
+                "split": split,
+                "failure_time_s": result.failure_time_s,
+                "failure_year": failure_year,
+                "final_damage": float(result.cumulative_damage[-1]),
+            }
+        )
 
     manifest_path = output_dir / "manifest.csv"
     with manifest_path.open("w", newline="", encoding="utf-8") as f:

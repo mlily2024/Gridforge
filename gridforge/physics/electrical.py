@@ -57,9 +57,7 @@ def radial_e_field(
     r_c = conductor_outer_radius_m(geom)
     r_s = insulation_outer_radius_m(geom)
     if not (r_c <= radius_m <= r_s):
-        raise ValueError(
-            f"radius {radius_m:.4g} m outside insulation [{r_c:.4g}, {r_s:.4g}] m"
-        )
+        raise ValueError(f"radius {radius_m:.4g} m outside insulation [{r_c:.4g}, {r_s:.4g}] m")
     return voltage_V_phase_to_ground / (radius_m * log(r_s / r_c))
 
 

@@ -18,8 +18,8 @@ SECONDS_PER_YEAR = 365.25 * SECONDS_PER_DAY
 
 class TestSoilAmbient:
     def test_summer_warmer_than_winter(self) -> None:
-        winter = soil_ambient_C(15.0 * SECONDS_PER_DAY, seed=0)        # mid-Jan
-        summer = soil_ambient_C(220.0 * SECONDS_PER_DAY, seed=0)        # early Aug
+        winter = soil_ambient_C(15.0 * SECONDS_PER_DAY, seed=0)  # mid-Jan
+        summer = soil_ambient_C(220.0 * SECONDS_PER_DAY, seed=0)  # early Aug
         assert summer > winter
 
     def test_amplitude_in_climatology_range(self) -> None:
@@ -50,11 +50,15 @@ class TestSoilMoisture:
 
     def test_winter_wetter_than_summer(self) -> None:
         # Average a couple of weeks for noise smoothing
-        winter = np.mean([soil_moisture_index(t, seed=0)
-                          for t in np.linspace(0.0, 14 * SECONDS_PER_DAY, 14)])
-        summer = np.mean([soil_moisture_index(t, seed=0)
-                          for t in np.linspace(180 * SECONDS_PER_DAY,
-                                               194 * SECONDS_PER_DAY, 14)])
+        winter = np.mean(
+            [soil_moisture_index(t, seed=0) for t in np.linspace(0.0, 14 * SECONDS_PER_DAY, 14)]
+        )
+        summer = np.mean(
+            [
+                soil_moisture_index(t, seed=0)
+                for t in np.linspace(180 * SECONDS_PER_DAY, 194 * SECONDS_PER_DAY, 14)
+            ]
+        )
         assert winter > summer
 
 

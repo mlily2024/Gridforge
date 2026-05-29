@@ -47,9 +47,7 @@ def main() -> int:
 
     # Calibration + accuracy on an independent held-out set.
     geom, mat = UK_11KV_240MM2_XLPE_3CORE
-    X, y = generate_training_data(
-        1000, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=cfg.seed + 99
-    )
+    X, y = generate_training_data(1000, cfg, geom, mat, UK_TYPICAL_INSTALLATION, seed=cfg.seed + 99)
     pred = ensemble.predict(X[:, 0], X[:, 1], X[:, 2])
     rmse = float(np.sqrt(np.mean((pred.mean - y.reshape(-1)) ** 2)))
     mean_sigma = float(np.mean(pred.std))

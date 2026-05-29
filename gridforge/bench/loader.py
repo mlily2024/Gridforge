@@ -104,9 +104,7 @@ def load_mini_dataset(dataset_dir: Path | str) -> DatasetView:
 
         telemetry_path = telem_dir / f"cable_{cid}.csv"
         if not telemetry_path.exists():
-            raise FileNotFoundError(
-                f"missing telemetry for cable {cid}: {telemetry_path}"
-            )
+            raise FileNotFoundError(f"missing telemetry for cable {cid}: {telemetry_path}")
 
         telem = _read_csv_columns(telemetry_path)
         cables[cid] = CableRecord(
@@ -128,12 +126,9 @@ def load_mini_dataset(dataset_dir: Path | str) -> DatasetView:
             ambient_C=np.array(telem.get("ambient_C", []), dtype=np.float64),
             moisture=np.array(telem.get("moisture", []), dtype=np.float64),
             conductor_C=np.array(telem.get("conductor_C", []), dtype=np.float64),
-            e_field_V_per_m=np.array(telem.get("e_field_V_per_m", []),
-                                      dtype=np.float64),
-            pd_rate_relative=np.array(telem.get("pd_rate_relative", []),
-                                       dtype=np.float64),
-            cumulative_damage=np.array(telem.get("cumulative_damage", []),
-                                        dtype=np.float64),
+            e_field_V_per_m=np.array(telem.get("e_field_V_per_m", []), dtype=np.float64),
+            pd_rate_relative=np.array(telem.get("pd_rate_relative", []), dtype=np.float64),
+            cumulative_damage=np.array(telem.get("cumulative_damage", []), dtype=np.float64),
             manifest=manifest_row,
         )
 
@@ -162,11 +157,16 @@ def stack_features(records: Iterable[CableRecord]) -> tuple[np.ndarray, np.ndarr
         if "rho_t_KmW" not in r.manifest:
             rho_t = 1.0
         n = r.times_h.size
-        Xs.append(np.stack([
-            r.current_A,
-            r.ambient_C,
-            np.full(n, rho_t),
-        ], axis=-1))
+        Xs.append(
+            np.stack(
+                [
+                    r.current_A,
+                    r.ambient_C,
+                    np.full(n, rho_t),
+                ],
+                axis=-1,
+            )
+        )
         ys.append(r.conductor_C.copy())
     if not Xs:
         return np.zeros((0, 3)), np.zeros(0)

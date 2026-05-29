@@ -20,13 +20,12 @@ that the runner needs for metric computation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 
-from .loader import CableRecord, DatasetView, stack_features
+from .loader import DatasetView, stack_features
 from .tasks import (
     T1_FAILURE_60D,
     T2_RUL_REGRESSION,
@@ -36,14 +35,13 @@ from .tasks import (
     Task,
 )
 
-
 # ---------------------------------------------------------------------------
 # Common interfaces
 # ---------------------------------------------------------------------------
 
 DEFAULT_DAMAGE_THRESHOLD: float = 1.0e-5
-WINDOW_HOURS: int = 30 * 24    # 30-day input window for T1
-HORIZON_HOURS: int = 60 * 24   # 60-day prediction horizon for T1
+WINDOW_HOURS: int = 30 * 24  # 30-day input window for T1
+HORIZON_HOURS: int = 60 * 24  # 60-day prediction horizon for T1
 
 
 class Baseline:
@@ -54,8 +52,9 @@ class Baseline:
     # re-decorating.
     name: str = "abstract"
 
-    def predict(self, view: DatasetView, task: Task,
-                damage_threshold: float = DEFAULT_DAMAGE_THRESHOLD) -> dict:
+    def predict(
+        self, view: DatasetView, task: Task, damage_threshold: float = DEFAULT_DAMAGE_THRESHOLD
+    ) -> dict:
         if task is T1_FAILURE_60D:
             return self.predict_t1(view, damage_threshold)
         if task is T2_RUL_REGRESSION:
@@ -88,6 +87,7 @@ class Baseline:
 # T2 / T1 helper — compute time-to-threshold (years) from a damage trace
 # ---------------------------------------------------------------------------
 
+
 def _hours_to_threshold(
     cumulative_damage: np.ndarray,
     times_h: np.ndarray,
@@ -104,6 +104,7 @@ def _hours_to_threshold(
 # ---------------------------------------------------------------------------
 # 1) IEC Oracle baseline — physics, no ML
 # ---------------------------------------------------------------------------
+
 
 class IECOracleBaseline(Baseline):
     """Pure physics baseline.
@@ -138,10 +139,7 @@ class IECOracleBaseline(Baseline):
             if rec.cumulative_damage.size < 24:
                 out[cid] = float("nan")
                 continue
-            recent_rate_per_h = (
-                (rec.cumulative_damage[-1] - rec.cumulative_damage[-24])
-                / 24.0
-            )
+            recent_rate_per_h = (rec.cumulative_damage[-1] - rec.cumulative_damage[-24]) / 24.0
             d_now = rec.cumulative_damage[-1]
             if recent_rate_per_h <= 0.0 or d_now >= damage_threshold:
                 out[cid] = float("nan")
@@ -237,7 +235,9 @@ class GradientBoostedBaseline(Baseline):
         if X.shape[0] == 0:
             return
         self._model = HistGradientBoostingRegressor(
-            max_iter=200, max_depth=6, random_state=2026,
+            max_iter=200,
+            max_depth=6,
+            random_state=2026,
         )
         self._model.fit(X, y)
         self._fitted = True
@@ -249,8 +249,7 @@ class GradientBoostedBaseline(Baseline):
             if not train:
                 return {}
             mean_C = float(np.mean(np.concatenate([r.conductor_C for r in train])))
-            return {cid: np.full(rec.conductor_C.size, mean_C)
-                    for cid, rec in view.cables.items()}
+            return {cid: np.full(rec.conductor_C.size, mean_C) for cid, rec in view.cables.items()}
         if not self._fitted:
             self._fit_t4(view)
         if not self._fitted:
@@ -258,11 +257,14 @@ class GradientBoostedBaseline(Baseline):
         out = {}
         for cid, rec in view.cables.items():
             n = rec.times_h.size
-            X = np.stack([
-                rec.current_A,
-                rec.ambient_C,
-                np.full(n, 1.0),
-            ], axis=-1)
+            X = np.stack(
+                [
+                    rec.current_A,
+                    rec.ambient_C,
+                    np.full(n, 1.0),
+                ],
+                axis=-1,
+            )
             out[cid] = self._model.predict(X)
         return out
 
@@ -312,9 +314,7 @@ class PINNBaseline(Baseline):
             from ..models.pinn import IECSurrogatePINN
 
             model = IECSurrogatePINN()
-            self._surrogate = TrainedPINNSurrogate.load(
-                str(pinn_state_path), model=model
-            )
+            self._surrogate = TrainedPINNSurrogate.load(str(pinn_state_path), model=model)
         except Exception:  # noqa: BLE001 — PINN is optional
             self._surrogate = None
 

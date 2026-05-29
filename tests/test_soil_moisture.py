@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import math
-
 import numpy as np
 import pytest
 
@@ -17,7 +15,6 @@ from gridforge.physics.soil_moisture import (
     theta_array_to_rho_t,
     theta_to_rho_t,
 )
-
 
 # ---------------------------------------------------------------------------
 # Endpoint behaviour
@@ -33,9 +30,7 @@ class TestEndpoints:
 
     @pytest.mark.parametrize("soil", list(KNOWN_SOIL_TYPES.values()))
     def test_saturated_moisture_returns_rho_sat(self, soil: SoilType) -> None:
-        assert theta_to_rho_t(soil.theta_sat, soil) == pytest.approx(
-            soil.rho_sat_KmW, rel=1e-12
-        )
+        assert theta_to_rho_t(soil.theta_sat, soil) == pytest.approx(soil.rho_sat_KmW, rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -115,9 +110,7 @@ class TestSoilLookup:
     def test_string_key_resolves(self, name: str) -> None:
         # Same theta, same answer via string OR via the SoilType instance.
         soil = KNOWN_SOIL_TYPES[name]
-        assert theta_to_rho_t(0.2, name) == pytest.approx(
-            theta_to_rho_t(0.2, soil), rel=1e-12
-        )
+        assert theta_to_rho_t(0.2, name) == pytest.approx(theta_to_rho_t(0.2, soil), rel=1e-12)
 
     def test_unknown_string_raises(self) -> None:
         with pytest.raises(ValueError, match="unknown soil type"):

@@ -30,7 +30,6 @@ except ImportError:  # pragma: no cover
 
 import numpy as np
 
-
 ArrayLike = Union[float, Sequence[float], np.ndarray]
 
 
@@ -80,9 +79,7 @@ class TrainedPINNSurrogate:
             rho_arr = np.full(n, float(rho_arr[0]), dtype=np.float32)
 
         if not (I_arr.size == amb_arr.size == rho_arr.size):
-            raise ValueError(
-                "I_A, ambient_C, soil_rho_t_KmW must broadcast to a common length"
-            )
+            raise ValueError("I_A, ambient_C, soil_rho_t_KmW must broadcast to a common length")
 
         x = np.stack([I_arr, amb_arr, rho_arr], axis=-1)
         with torch.no_grad():

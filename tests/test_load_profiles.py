@@ -9,7 +9,6 @@ from gridforge.data.load_profiles import (
     LoadSpec,
     commercial,
     industrial,
-    mixed,
     residential,
 )
 

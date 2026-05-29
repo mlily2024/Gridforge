@@ -26,7 +26,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import log, pi, sqrt
-from typing import Optional
 
 try:
     import torch
@@ -36,12 +35,7 @@ except ImportError:  # pragma: no cover
     torch = None  # type: ignore[assignment]
     _TORCH_AVAILABLE = False
 
-from ..physics.cable_archetype import (
-    UK_11KV_240MM2_XLPE_3CORE,
-    UK_TYPICAL_INSTALLATION,
-)
 from ..physics.thermal import (
-    OMEGA_50HZ,
     CableGeometry,
     CableMaterials,
     InstallationConditions,
@@ -65,7 +59,7 @@ class PhysicsConstants:
 
     T1_KmW: float
     T3_KmW: float
-    T4_geometric_factor: float          # the (1/2pi) * arccosh(2L/D_e) part
+    T4_geometric_factor: float  # the (1/2pi) * arccosh(2L/D_e) part
     n_conductors: int
     sheath_loss_factor: float
     R_dc_20C_ohm_per_m: float
@@ -128,9 +122,7 @@ def physics_residual(
     rho_t = inputs[..., 2:3]
 
     # AC resistance at predicted T_c (Cu temperature correction + skin factor)
-    R_dc = constants.R_dc_20C_ohm_per_m * (
-        1.0 + constants.alpha_per_C * (T_c_pred - 20.0)
-    )
+    R_dc = constants.R_dc_20C_ohm_per_m * (1.0 + constants.alpha_per_C * (T_c_pred - 20.0))
     R = R_dc * constants.R_ac_dc_ratio
     I2R = I * I * R
 
@@ -140,9 +132,7 @@ def physics_residual(
     lam1 = constants.sheath_loss_factor
     R_total = constants.T1_KmW + n * (1.0 + lam1) * (constants.T3_KmW + T4)
     W_d = constants.W_d_W_per_m
-    layer_factor_W_d = 0.5 * constants.T1_KmW + n * (1.0 + lam1) * (
-        constants.T3_KmW + T4
-    )
+    layer_factor_W_d = 0.5 * constants.T1_KmW + n * (1.0 + lam1) * (constants.T3_KmW + T4)
 
     delta_T_target = I2R * R_total + W_d * layer_factor_W_d
     return (T_c_pred - amb) - delta_T_target
@@ -198,19 +188,15 @@ def adaptive_loss_weights(
     if not param_list:
         return prev_w_phys
 
-    grad_data = torch.autograd.grad(
-        L_data, param_list, retain_graph=True, allow_unused=True
-    )
-    grad_phys = torch.autograd.grad(
-        L_phys, param_list, retain_graph=True, allow_unused=True
-    )
+    grad_data = torch.autograd.grad(L_data, param_list, retain_graph=True, allow_unused=True)
+    grad_phys = torch.autograd.grad(L_phys, param_list, retain_graph=True, allow_unused=True)
 
     def _l2(grads) -> float:
         s = 0.0
         for g in grads:
             if g is not None:
                 s += float(g.detach().pow(2).sum().item())
-        return s ** 0.5
+        return s**0.5
 
     norm_data = _l2(grad_data)
     norm_phys = _l2(grad_phys)

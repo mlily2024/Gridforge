@@ -24,7 +24,7 @@ SECONDS_PER_YEAR: float = 365.25 * SECONDS_PER_DAY
 # UK climatology at 0.8 m burial depth
 SOIL_TEMP_MEAN_C: float = 11.0
 SOIL_TEMP_AMPLITUDE_K: float = 6.0
-SOIL_TEMP_PEAK_DOY: float = 220.0   # day-of-year of warmest soil ~ early Aug
+SOIL_TEMP_PEAK_DOY: float = 220.0  # day-of-year of warmest soil ~ early Aug
 
 # Diurnal coupling at 0.8 m is small (< 0.5 K) — included for completeness
 DIURNAL_AMPLITUDE_K: float = 0.3
@@ -70,9 +70,7 @@ class WeatherSpec:
         seasonal = self.amplitude_K * np.cos(
             2.0 * np.pi * (t_s / SECONDS_PER_YEAR - SOIL_TEMP_PEAK_DOY / 365.25)
         )
-        diurnal = DIURNAL_AMPLITUDE_K * np.cos(
-            2.0 * np.pi * (t_s / SECONDS_PER_DAY - 14.0 / 24.0)
-        )
+        diurnal = DIURNAL_AMPLITUDE_K * np.cos(2.0 * np.pi * (t_s / SECONDS_PER_DAY - 14.0 / 24.0))
         rng = np.random.default_rng(self.seed * 7919 + int(t_s) // 3600)
         weather_noise = 0.5 * float(rng.standard_normal())
         return float(self.mean_C + seasonal + diurnal + weather_noise)

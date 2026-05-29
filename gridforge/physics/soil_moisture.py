@@ -47,7 +47,6 @@ from typing import Final
 
 import numpy as np
 
-
 # ---------------------------------------------------------------------------
 # Soil-type constants
 # ---------------------------------------------------------------------------
@@ -111,10 +110,7 @@ def _resolve_soil(soil: SoilType | str) -> SoilType:
     if isinstance(soil, SoilType):
         return soil
     if soil not in KNOWN_SOIL_TYPES:
-        raise ValueError(
-            f"unknown soil type {soil!r}; "
-            f"available: {sorted(KNOWN_SOIL_TYPES)}"
-        )
+        raise ValueError(f"unknown soil type {soil!r}; " f"available: {sorted(KNOWN_SOIL_TYPES)}")
     return KNOWN_SOIL_TYPES[soil]
 
 
@@ -151,7 +147,7 @@ def theta_to_rho_t(
     theta_clamped = float(np.clip(theta, 0.0, soil_resolved.theta_sat))
     ratio = soil_resolved.rho_sat_KmW / soil_resolved.rho_dry_KmW
     exponent = theta_clamped / soil_resolved.theta_sat
-    return float(soil_resolved.rho_dry_KmW * (ratio ** exponent))
+    return float(soil_resolved.rho_dry_KmW * (ratio**exponent))
 
 
 def theta_array_to_rho_t(

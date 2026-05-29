@@ -11,7 +11,7 @@ configured metric on the predictions.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterable, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -22,7 +22,7 @@ from .baselines import (
     WINDOW_HOURS,
     Baseline,
 )
-from .loader import DatasetView, CableRecord
+from .loader import DatasetView
 from .tasks import (
     T1_FAILURE_60D,
     T2_RUL_REGRESSION,
@@ -31,7 +31,6 @@ from .tasks import (
     T5_COUNTERFACTUAL,
     Task,
 )
-
 
 SECONDS_PER_YEAR = 365.25 * 24.0 * 3600.0
 
@@ -50,6 +49,7 @@ class LeaderboardEntry:
 # ---------------------------------------------------------------------------
 # Ground-truth construction per task
 # ---------------------------------------------------------------------------
+
 
 def _t1_labels(view: DatasetView, damage_threshold: float) -> tuple[dict, dict]:
     """Per-cable binary label: did damage cross threshold in the last
@@ -130,8 +130,10 @@ def _t5_labels(view: DatasetView) -> dict[str, np.ndarray]:
 # Per-task evaluators
 # ---------------------------------------------------------------------------
 
-def _evaluate_t1(view: DatasetView, predictions: dict, damage_threshold: float
-                 ) -> LeaderboardEntry | None:
+
+def _evaluate_t1(
+    view: DatasetView, predictions: dict, damage_threshold: float
+) -> LeaderboardEntry | None:
     labels_dict, valid_dict = _t1_labels(view, damage_threshold)
     test_records = view.by_split("test")
     y_true, y_pred = [], []
@@ -149,7 +151,8 @@ def _evaluate_t1(view: DatasetView, predictions: dict, damage_threshold: float
     brier = M.brier_score(y_true, y_pred)
     auc = M.auc_pr(y_true, y_pred)
     return LeaderboardEntry(
-        baseline="", task=T1_FAILURE_60D.name,
+        baseline="",
+        task=T1_FAILURE_60D.name,
         headline_metric_name=T1_FAILURE_60D.headline_metric,
         headline_metric_value=brier,
         secondary_metrics={"auc_pr": auc},
@@ -157,8 +160,9 @@ def _evaluate_t1(view: DatasetView, predictions: dict, damage_threshold: float
     )
 
 
-def _evaluate_t2(view: DatasetView, predictions: dict, damage_threshold: float
-                 ) -> LeaderboardEntry | None:
+def _evaluate_t2(
+    view: DatasetView, predictions: dict, damage_threshold: float
+) -> LeaderboardEntry | None:
     labels_dict, valid_dict = _t2_labels(view, damage_threshold)
     test_records = view.by_split("test")
     y_true, y_pred = [], []
@@ -175,7 +179,8 @@ def _evaluate_t2(view: DatasetView, predictions: dict, damage_threshold: float
     y_true = np.asarray(y_true, dtype=np.float64)
     y_pred = np.asarray(y_pred, dtype=np.float64)
     return LeaderboardEntry(
-        baseline="", task=T2_RUL_REGRESSION.name,
+        baseline="",
+        task=T2_RUL_REGRESSION.name,
         headline_metric_name=T2_RUL_REGRESSION.headline_metric,
         headline_metric_value=M.mae(y_true, y_pred),
         secondary_metrics={
@@ -200,7 +205,8 @@ def _evaluate_t3(view: DatasetView, predictions: dict) -> LeaderboardEntry | Non
     y_true_flat = np.concatenate(y_true)
     y_score_flat = np.concatenate(y_score)
     return LeaderboardEntry(
-        baseline="", task=T3_ANOMALY.name,
+        baseline="",
+        task=T3_ANOMALY.name,
         headline_metric_name=T3_ANOMALY.headline_metric,
         headline_metric_value=M.precision_at_recall(y_true_flat, y_score_flat, 0.9),
         secondary_metrics={"auc_pr": M.auc_pr(y_true_flat, y_score_flat)},
@@ -221,7 +227,8 @@ def _evaluate_t4(view: DatasetView, predictions: dict) -> LeaderboardEntry | Non
     y_true_flat = np.concatenate(y_true)
     y_pred_flat = np.concatenate(y_pred)
     return LeaderboardEntry(
-        baseline="", task=T4_VIRTUAL_SENSOR.name,
+        baseline="",
+        task=T4_VIRTUAL_SENSOR.name,
         headline_metric_name=T4_VIRTUAL_SENSOR.headline_metric,
         headline_metric_value=M.rmse(y_true_flat, y_pred_flat),
         secondary_metrics={"mae": M.mae(y_true_flat, y_pred_flat)},
@@ -243,7 +250,8 @@ def _evaluate_t5(view: DatasetView, predictions: dict) -> LeaderboardEntry | Non
     y_true_flat = np.concatenate(y_true)
     y_pred_flat = np.concatenate(y_pred)
     return LeaderboardEntry(
-        baseline="", task=T5_COUNTERFACTUAL.name,
+        baseline="",
+        task=T5_COUNTERFACTUAL.name,
         headline_metric_name=T5_COUNTERFACTUAL.headline_metric,
         headline_metric_value=M.mae(y_true_flat, y_pred_flat),
         secondary_metrics={"rmse": M.rmse(y_true_flat, y_pred_flat)},
@@ -278,13 +286,15 @@ def run_benchmark(
                 entry = evaluator(view, preds)
             if entry is None:
                 continue
-            entries.append(LeaderboardEntry(
-                baseline=b.name,
-                task=entry.task,
-                headline_metric_name=entry.headline_metric_name,
-                headline_metric_value=entry.headline_metric_value,
-                secondary_metrics=entry.secondary_metrics,
-                n_samples=entry.n_samples,
-                note=entry.note,
-            ))
+            entries.append(
+                LeaderboardEntry(
+                    baseline=b.name,
+                    task=entry.task,
+                    headline_metric_name=entry.headline_metric_name,
+                    headline_metric_value=entry.headline_metric_value,
+                    secondary_metrics=entry.secondary_metrics,
+                    n_samples=entry.n_samples,
+                    note=entry.note,
+                )
+            )
     return entries

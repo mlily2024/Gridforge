@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
+from gridforge.bench.loader import load_mini_dataset, stack_features
 from gridforge.data.cable_year import CableYearSpec
 from gridforge.data.dataset import assemble_dataset
 from gridforge.data.failure_modes import HealthyMode
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
-from gridforge.bench.loader import load_mini_dataset, stack_features
 
 
 @pytest.fixture(scope="module")

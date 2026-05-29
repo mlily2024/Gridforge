@@ -25,8 +25,8 @@ class Task:
 
     name: str
     description: str
-    headline_metric: str           # the metric used to rank submissions
-    higher_is_better: bool         # for the headline metric
+    headline_metric: str  # the metric used to rank submissions
+    higher_is_better: bool  # for the headline metric
     secondary_metrics: tuple[str, ...] = ()
 
 

@@ -54,7 +54,6 @@ from .thermal import (
     thermal_resistance_T4,
 )
 
-
 # ---------------------------------------------------------------------------
 # Cable thermal-capacitance estimation
 # ---------------------------------------------------------------------------
@@ -106,6 +105,7 @@ def cable_thermal_capacitance(geom: CableGeometry) -> float:
 # ---------------------------------------------------------------------------
 # Transient solver
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class TransientResult:

@@ -12,8 +12,6 @@ from gridforge.physics.cable_archetype import (
 )
 from gridforge.physics.thermal import solve_steady_state
 from gridforge.training.loss import (
-    PhysicsConstants,
-    adaptive_loss_weights,
     combined_loss,
     physics_residual,
     precompute_physics_constants,
@@ -32,8 +30,10 @@ class TestConstantsPrecompute:
     def test_too_shallow_burial_rejected(self) -> None:
         geom, mat = UK_11KV_240MM2_XLPE_3CORE
         from gridforge.physics.thermal import InstallationConditions
+
         bad = InstallationConditions(
-            burial_depth_m=0.01, soil_thermal_resistivity_KmW=1.0,
+            burial_depth_m=0.01,
+            soil_thermal_resistivity_KmW=1.0,
         )
         with pytest.raises(ValueError):
             precompute_physics_constants(geom, mat, bad)
@@ -50,8 +50,10 @@ class TestPhysicsResidual:
         """If we plug the IEC oracle's T_c into the residual, it should be ~0."""
         I, amb, rho = 400.0, 15.0, 1.0
         from gridforge.physics.thermal import InstallationConditions
+
         install = InstallationConditions(
-            burial_depth_m=0.8, soil_thermal_resistivity_KmW=rho,
+            burial_depth_m=0.8,
+            soil_thermal_resistivity_KmW=rho,
             ambient_soil_temp_C=amb,
         )
         sol = solve_steady_state(I, 11_000.0, self.geom, self.mat, install)

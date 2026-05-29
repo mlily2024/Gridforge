@@ -30,8 +30,7 @@ from gridforge.physics.soil_moisture import (
     theta_array_to_rho_t,
 )
 
-
-THETA_GRID: np.ndarray = np.linspace(0.0, 0.5, 26)   # 0.0, 0.02, ..., 0.50
+THETA_GRID: np.ndarray = np.linspace(0.0, 0.5, 26)  # 0.0, 0.02, ..., 0.50
 
 
 def main() -> int:
@@ -62,33 +61,33 @@ def main() -> int:
     clay = theta_array_to_rho_t(THETA_GRID, CLAY)
 
     for i, theta in enumerate(THETA_GRID):
-        print(
-            f"{theta:6.2f} | {loam[i]:9.3f} | {sandy[i]:9.3f} | {clay[i]:9.3f}"
-        )
+        print(f"{theta:6.2f} | {loam[i]:9.3f} | {sandy[i]:9.3f} | {clay[i]:9.3f}")
 
     # ---- CSV -----------------------------------------------------------
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["theta", "rho_T_loam_KmW", "rho_T_sandy_KmW", "rho_T_clay_KmW"])
         for i, theta in enumerate(THETA_GRID):
-            writer.writerow([
-                f"{theta:.4f}",
-                f"{loam[i]:.6f}",
-                f"{sandy[i]:.6f}",
-                f"{clay[i]:.6f}",
-            ])
+            writer.writerow(
+                [
+                    f"{theta:.4f}",
+                    f"{loam[i]:.6f}",
+                    f"{sandy[i]:.6f}",
+                    f"{clay[i]:.6f}",
+                ]
+            )
     print(f"\n[saved] {csv_path}")
 
     # ---- PNG (optional, only if matplotlib is installed) --------------
     try:
         import matplotlib.pyplot as plt
+
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.plot(THETA_GRID, loam, label="loam (default)", linewidth=2.0)
         ax.plot(THETA_GRID, sandy, label="sandy", linestyle="--", linewidth=2.0)
         ax.plot(THETA_GRID, clay, label="clay", linestyle=":", linewidth=2.0)
         ax.axhline(1.0, color="grey", linewidth=0.6, linestyle="--", alpha=0.6)
-        ax.text(0.49, 1.05, "IEC 60287 'damp' = 1.0", ha="right", fontsize=8,
-                color="grey")
+        ax.text(0.49, 1.05, "IEC 60287 'damp' = 1.0", ha="right", fontsize=8, color="grey")
         ax.set_xlabel("Volumetric water content theta  [m3/m3]")
         ax.set_ylabel("Soil thermal resistivity rho_T  [K.m/W]")
         ax.set_title("Soil moisture to thermal resistivity coupling")

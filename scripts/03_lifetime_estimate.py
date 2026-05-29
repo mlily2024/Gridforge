@@ -28,7 +28,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridforge.physics.ageing import (
     SECONDS_PER_YEAR,
-    CrineParameters,
     cumulative_damage,
     life_at_constant_stress,
     remaining_useful_life_years,
@@ -46,8 +45,8 @@ DT_HOURS: float = 1.0
 
 def diurnal_current(t_s: float, peak_A: float = 350.0, base_A: float = 100.0) -> float:
     hour_of_day = (t_s / 3600.0) % 24.0
-    morning = np.exp(-((hour_of_day - 8.0) / 2.0) ** 2)
-    evening = np.exp(-((hour_of_day - 18.0) / 2.5) ** 2) * 1.3
+    morning = np.exp(-(((hour_of_day - 8.0) / 2.0) ** 2))
+    evening = np.exp(-(((hour_of_day - 18.0) / 2.5) ** 2)) * 1.3
     shape = max(morning, evening)
     return float(base_A + (peak_A - base_A) * shape)
 
@@ -58,9 +57,7 @@ def run_scenario(name: str, current_fn) -> dict:
     voltage_phase = 11_000.0 / np.sqrt(3.0)
     E_max = max_e_field(voltage_phase, geom)
 
-    total_s = YEARS_TO_SIMULATE * SECONDS_PER_YEAR
     dt_s = DT_HOURS * 3600.0
-    times = np.arange(0.0, total_s, dt_s)
 
     # Simulate one representative year then tile (fast and a fair approximation;
     # the steady-state thermal lag means 5 years of simulation matches 5 years
@@ -132,13 +129,15 @@ def main() -> int:
         writer.writerow(["scenario", "year", "T_C", "cumulative_damage"])
         for s in scenarios:
             for y, T, D in zip(s["years"], s["T_C"], s["damage"]):
-                writer.writerow([s["name"], round(float(y), 4), round(float(T), 3),
-                                 round(float(D), 8)])
+                writer.writerow(
+                    [s["name"], round(float(y), 4), round(float(T), 3), round(float(D), 8)]
+                )
     print()
     print(f"Saved table:  {csv_path}")
 
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError:
