@@ -13,9 +13,7 @@ Run:
 from __future__ import annotations
 
 import shutil
-import sys
 from pathlib import Path
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_OUT = REPO_ROOT / "scripts" / "output"
@@ -25,16 +23,13 @@ FIG_DIR = REPO_ROOT / "paper" / "figures"
 # Map paper-figure name -> source PNG produced by a demo script. Any
 # new figure the paper references is added here.
 FIGURE_MAP = {
-    "fig01_iec_validation.png":
-        SCRIPTS_OUT / "01_load_vs_temperature.png",
-    "fig02_diurnal_response.png":
-        SCRIPTS_OUT / "02_diurnal_load.png",
-    "fig03_lifetime_curves.png":
-        SCRIPTS_OUT / "03_lifetime_curves.png",
-    "fig04_pinn_training_curves.png":
-        SCRIPTS_OUT / "05_pinn_training" / "training_curves.png",
-    "fig05_pinn_validation_scatter.png":
-        SCRIPTS_OUT / "05_pinn_training" / "validation_scatter.png",
+    "fig01_iec_validation.png": SCRIPTS_OUT / "01_load_vs_temperature.png",
+    "fig02_diurnal_response.png": SCRIPTS_OUT / "02_diurnal_load.png",
+    "fig03_lifetime_curves.png": SCRIPTS_OUT / "03_lifetime_curves.png",
+    "fig04_pinn_training_curves.png": SCRIPTS_OUT / "05_pinn_training" / "training_curves.png",
+    "fig05_pinn_validation_scatter.png": SCRIPTS_OUT
+    / "05_pinn_training"
+    / "validation_scatter.png",
 }
 
 
