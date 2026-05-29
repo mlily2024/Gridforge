@@ -1,0 +1,47 @@
+name: CI
+
+# Continuous integration for the GridForge open-source package.
+# Lints, format-checks, and runs the test suite on a clean runner.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint, format & tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          # Pinned so the lint/format gate is reproducible.
+          pip install ruff==0.15.14 black==26.5.1
+          # CPU-only torch exercises the PINN / ensemble paths.
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e .[dev]
+
+      - name: Ruff (lint)
+        run: ruff check .
+
+      - name: Black (format check)
+        run: black --check .
+
+      - name: Tests (excluding slow PINN training)
+        run: pytest tests -m "not slow"
