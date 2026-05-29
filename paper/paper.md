@@ -1,6 +1,6 @@
 ---
 title: "GridForge: An Open Physics-Informed Digital Twin and Benchmark Suite for UK 11 kV Underground Distribution Cables"
-author: "Lylliam Musoke"
+author: "Lilliane Linnet Musoke"
 date: "2026-04-28"
 abstract: |
   UK distribution-cable monitoring sits in an uncomfortable gap: every
@@ -124,6 +124,8 @@ depth and $D_e$ the cable's overall outside diameter. The system is
 implicit because $R$ depends on $\theta_c$; we solve by fixed-point
 iteration, which converges in 5–10 steps for typical operating
 conditions.
+
+![**Figure 1.** Steady-state conductor temperature predicted by the IEC 60287 fixed-point solver for the UK 11 kV 240 mm² Cu XLPE 3-core archetype at 0.8 m burial depth and 1.0 K·m/W soil resistivity. The super-linear rise above 350 A reflects the temperature dependence of the conductor a.c. resistance $R(\theta_c)$.](figures/fig01_iec_validation.png)
 
 ## 3.2  Transient thermal model (lumped first-order)
 
@@ -256,6 +258,10 @@ $\theta_c$. Adam at learning rate $2 \times 10^{-3}$, batch size 256,
 independent held-out set of 1000 pairs gives 0.148 °C** — comfortably
 inside the 0.5 °C target we set ourselves before training.
 
+![**Figure 4.** PINN training history over 1500 epochs. Top: data loss (MSE against the IEC 60287 oracle) and physics loss (squared IEC algebraic-balance residual evaluated at the network's prediction), both on a log scale. Bottom: validation RMSE on a held-out set of 800 pairs. The 0.5 °C GF-003 target is reached by epoch 500 and the trajectory stabilises by epoch 1000.](figures/fig04_pinn_training_curves.png)
+
+![**Figure 5.** PINN predictions versus IEC 60287 oracle ground truth on the validation set (n = 800). All points lie close to the diagonal across the full input range $I \in [50, 600]$ A, indicating no systematic bias. Final validation RMSE 0.13 °C.](figures/fig05_pinn_validation_scatter.png)
+
 # 6  Benchmark suite
 
 GridForge ships five sealed-test tasks (Table 1) and three reference
@@ -321,6 +327,8 @@ work (§9).
 
 ## 8.1  Diurnal load response
 
+![**Figure 2.** Four-day transient simulation under a UK two-peak residential load profile (100–350 A swing, Met Office winter ambient). Daily peak conductor temperature reaches 43 °C against the XLPE 90 °C thermal limit; the visible lag between load peaks and temperature peaks reflects the cable's first-order thermal time constant of approximately 64 minutes.](figures/fig02_diurnal_response.png)
+
 Figure 2 shows a four-day simulated trace under a UK two-peak
 domestic load profile (residential profile, 100–350 A swing,
 Met Office winter ambient ~5 °C). The cable's first-order time
@@ -331,6 +339,8 @@ limit; mean conductor temperature 24 °C reflects typical UK
 distribution-feeder loading.
 
 ## 8.2  Long-horizon ageing
+
+![**Figure 3.** Cumulative Crine damage over five years for three operating scenarios: constant 250 A loading; the §8.1 diurnal profile; and the diurnal profile scaled by 1.15 to simulate moderate overload. Final damage at five years sits between $10^{-7}$ and $4 \times 10^{-7}$ — three orders of magnitude below the failure threshold of $D = 1$.](figures/fig03_lifetime_curves.png)
 
 Figure 3 plots cumulative Crine damage over 5 years for three
 operating scenarios: constant 250 A loading, the §8.1 diurnal

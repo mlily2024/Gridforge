@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Lylliam Musoke" }
+    { name = "Lilliane Linnet Musoke" }
 ]
 keywords = ["power-systems", "cable-monitoring", "physics-informed-neural-networks", "distribution-grid", "digital-twin"]
 classifiers = [
@@ -48,9 +48,7 @@ dev = [
 where = ["."]
 include = ["gridforge*"]
 
-[tool.ruff]
-line-length = 100
-target-version = "py310"
+# Ruff config lives in ruff.toml (which takes precedence over [tool.ruff]).
 
 [tool.black]
 line-length = 100

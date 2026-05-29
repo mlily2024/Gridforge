@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-04-28
-**Author:** Lylliam Musoke
+**Author:** Lilliane Linnet Musoke
 
 ## Context
 
