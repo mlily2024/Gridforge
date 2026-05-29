@@ -65,4 +65,4 @@ MIT — see `LICENSE`.
 
 ## Citation
 
-If GridForge is useful in your work, citation guidance will be added once the v0.5 release and accompanying preprint are published.
+If you use GridForge in your work, please cite it via the **"Cite this repository"** button (backed by [`CITATION.cff`](CITATION.cff)).
