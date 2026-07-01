@@ -140,7 +140,7 @@ def assemble_dataset(
                 "load_base_A": spec.load.base_A,
                 "load_seed": spec.load.seed,
                 "weather_seed": spec.weather.seed,
-                "failure_mode": spec.failure_mode.name,
+                "condition": spec.condition.name,
                 "duration_years": spec.duration_years,
                 "sample_period_s": spec.sample_period_s,
                 "line_voltage_V_rms": spec.line_voltage_V_rms,

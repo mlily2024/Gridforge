@@ -15,7 +15,7 @@ data due to commercial sensitivity and security constraints.
 
 The dataset must:
 
-- Cover ≥4 archetypes and ≥4 failure modes
+- Cover ≥4 archetypes and ≥4 condition modes
 - Provide hourly-resolution telemetry across multi-year horizons
 - Be reproducible from a small set of seeds
 - Be calibrated to public physical constants (no employer data)
@@ -37,9 +37,9 @@ A cable-year is a tuple of:
   - **installation**  (burial depth + soil thermal resistivity + ambient mean)
   - **load profile**  (residential / commercial / industrial / mixed)
   - **weather seed**  (per-cable noise + climatology)
-  - **failure mode**  (healthy / water-ingress / thermal-ageing / accelerated-dielectric)
+  - **condition mode**  (healthy / water-ingress / thermal-ageing / accelerated-dielectric)
   - **duration**      (default 1 year, configurable up to multi-year — the
-                       mini demo uses 5 years to surface failure-mode
+                       mini demo uses 5 years to surface condition-mode
                        differentiation)
 
 Every output cable-year is fully reproducible from this 6-tuple plus a
@@ -60,7 +60,7 @@ The four registered archetypes are:
 |---|---|
 | `gridforge.data.load_profiles` | Four load-shape functions with diurnal, weekly, and seasonal modulation |
 | `gridforge.data.weather` | UK soil-temperature climatology at 0.8 m + soil-moisture index |
-| `gridforge.data.failure_modes` | Four failure-mode injectors (field multiplier + temperature offset + PD multiplier) |
+| `gridforge.data.conditions` | Four condition-mode injectors (field multiplier + temperature offset + PD multiplier) |
 | `gridforge.data.cable_year` | Hourly forward integration of the lumped first-order thermal lag, Crine damage integration, failure-time detection |
 | `gridforge.data.dataset` | Multi-cable-year assembler with deterministic split and on-disk layout |
 
@@ -147,8 +147,8 @@ No employer data, no NDA-held data, no commercially confidential parameters.
   moisture in the telemetry stream lets later versions of the PINN learn
   the coupling without re-generating the dataset.
 
-- **Tie failure-mode parameters to Weibull failure-time distributions
-  directly.** Rejected for now: keeping the failure-mode injectors physics-
+- **Tie condition-mode parameters to Weibull failure-time distributions
+  directly.** Rejected for now: keeping the condition-mode injectors physics-
   inspired (field stress, temperature, impulse train) means the resulting
   failure-time distribution is an emergent quantity, not a fitted curve.
   This is more defensible for the paper.

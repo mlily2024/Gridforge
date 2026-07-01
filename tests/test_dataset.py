@@ -14,7 +14,7 @@ from gridforge.data.dataset import (
     assemble_dataset,
     assign_split,
 )
-from gridforge.data.failure_modes import HealthyMode, WaterIngressMode
+from gridforge.data.conditions import HealthyMode, WaterIngressMode
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 
@@ -59,7 +59,7 @@ class TestAssembleDataset:
                 duration_years=0.05,
                 load=LoadSpec("residential", 300.0, 80.0, seed=i),
                 weather=WeatherSpec(seed=i),
-                failure_mode=HealthyMode() if i % 2 == 0 else WaterIngressMode(seed=i),
+                condition=HealthyMode() if i % 2 == 0 else WaterIngressMode(seed=i),
             )
             for i in range(4)
         ]

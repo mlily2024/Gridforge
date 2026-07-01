@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from gridforge.data.cable_year import CableYearSpec, simulate_cable_year
-from gridforge.data.failure_modes import (
+from gridforge.data.conditions import (
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
@@ -16,13 +16,13 @@ from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 
 
-def _make_spec(failure_mode=None, duration_years=0.1, seed=0) -> CableYearSpec:
+def _make_spec(condition=None, duration_years=0.1, seed=0) -> CableYearSpec:
     return CableYearSpec(
         cable_id=f"test_{seed}",
         duration_years=duration_years,
         load=LoadSpec("residential", peak_A=350.0, base_A=80.0, seed=seed),
         weather=WeatherSpec(seed=seed),
-        failure_mode=failure_mode if failure_mode is not None else HealthyMode(),
+        condition=condition if condition is not None else HealthyMode(),
     )
 
 
@@ -77,15 +77,15 @@ class TestDeterminism:
         assert not np.array_equal(a.current_A, b.current_A)
 
 
-class TestFailureModeEffects:
-    """Different failure modes must produce visibly different damage trajectories
+class TestConditionModeEffects:
+    """Different condition modes must produce visibly different damage trajectories
     over a multi-year horizon."""
 
     def test_thermal_ageing_more_damaging_than_healthy(self) -> None:
-        healthy = simulate_cable_year(_make_spec(failure_mode=HealthyMode(), duration_years=1.0))
+        healthy = simulate_cable_year(_make_spec(condition=HealthyMode(), duration_years=1.0))
         ageing = simulate_cable_year(
             _make_spec(
-                failure_mode=ThermalAgeingMode(overheat_offset_C=30.0),
+                condition=ThermalAgeingMode(overheat_offset_C=30.0),
                 duration_years=1.0,
             )
         )
@@ -93,7 +93,7 @@ class TestFailureModeEffects:
 
     def test_water_ingress_field_grows(self) -> None:
         spec = _make_spec(
-            failure_mode=WaterIngressMode(onset_year=0.0, saturation_year=2.0),
+            condition=WaterIngressMode(onset_year=0.0, saturation_year=2.0),
             duration_years=1.0,
         )
         result = simulate_cable_year(spec)
@@ -102,7 +102,7 @@ class TestFailureModeEffects:
 
     def test_accelerated_dielectric_has_field_excursions(self) -> None:
         spec = _make_spec(
-            failure_mode=AcceleratedDielectricMode(impulse_per_year=400.0, seed=0),
+            condition=AcceleratedDielectricMode(impulse_per_year=400.0, seed=0),
             duration_years=1.0,
         )
         result = simulate_cable_year(spec)

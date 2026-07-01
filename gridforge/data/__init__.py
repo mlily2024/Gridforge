@@ -1,4 +1,4 @@
-"""Synthetic dataset generation — load profiles, weather, failure modes,
+"""Synthetic dataset generation — load profiles, weather, condition modes,
 cable-year simulator, multi-cable dataset assembler."""
 
 from .cable_year import (
@@ -16,14 +16,14 @@ from .dataset import (
     assemble_dataset,
     assign_split,
 )
-from .failure_modes import (
+from .conditions import (
     MODES,
     AcceleratedDielectricMode,
-    FailureMode,
+    ConditionMode,
     HealthyMode,
     ThermalAgeingMode,
     WaterIngressMode,
-    make_failure_mode,
+    make_condition,
 )
 from .load_profiles import (
     PROFILES,
@@ -55,14 +55,14 @@ __all__ = [
     "WeatherSpec",
     "soil_ambient_C",
     "soil_moisture_index",
-    # failure modes
+    # condition modes
     "MODES",
-    "FailureMode",
+    "ConditionMode",
     "HealthyMode",
     "WaterIngressMode",
     "ThermalAgeingMode",
     "AcceleratedDielectricMode",
-    "make_failure_mode",
+    "make_condition",
     # cable year
     "CableYearResult",
     "CableYearSpec",

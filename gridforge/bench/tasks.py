@@ -37,7 +37,7 @@ class Task:
 # Given 30 days of monitoring leading up to t_now, predict the probability
 # that cumulative damage will exceed a threshold within the next 60 days.
 # (Damage threshold is a benchmark-defined "near-failure" proxy because
-# our synthetic dataset's failure-mode parameters at typical loading do
+# our synthetic dataset's condition-mode parameters at typical loading do
 # not produce hard failures within the 5-year horizon.)
 #
 # Headline metric: Brier score (lower is better)
@@ -121,7 +121,7 @@ T4_VIRTUAL_SENSOR = Task(
 # ---------------------------------------------------------------------------
 #
 # For each test cable, attribute the fraction of cumulative damage to each
-# of (load, ambient, failure-mode driver). Ground-truth fractions are
+# of (load, ambient, condition-mode driver). Ground-truth fractions are
 # obtainable in the synthetic dataset by re-running the simulator with one
 # driver held at its baseline; the benchmark calibrates each baseline's
 # attribution against those ground-truth fractions.
@@ -131,7 +131,7 @@ T4_VIRTUAL_SENSOR = Task(
 
 T5_COUNTERFACTUAL = Task(
     name="T5_counterfactual",
-    description="Counterfactual attribution of damage fractions to load / ambient / failure-mode driver",
+    description="Counterfactual attribution of damage fractions to load / ambient / condition-mode driver",
     headline_metric="mae",
     higher_is_better=False,
     secondary_metrics=("rmse",),

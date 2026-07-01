@@ -1,13 +1,13 @@
 """
 Generate a small synthetic dataset spanning all four UK 11 kV archetypes,
-all four failure modes, multiple load profiles, and a 5-year horizon.
+all four condition modes, multiple load profiles, and a 5-year horizon.
 
 Spec grid (configurable below):
 
   archetypes  4   11 kV 240 mm^2 XLPE 3c, 95 mm^2 XLPE 3c, 300 mm^2 XLPE 1c,
                   240 mm^2 PILC 3c
   load profs  4   residential, commercial, industrial, mixed
-  failure modes 4 healthy, water_ingress, thermal_ageing, accelerated_dielectric
+  condition modes 4 healthy, water_ingress, thermal_ageing, accelerated_dielectric
   seeds       2   per (archetype, profile, mode) combination
   horizon     5 yr  enough for some failure-time outcomes to appear
 
@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridforge.data.cable_year import CableYearSpec
 from gridforge.data.dataset import assemble_dataset
-from gridforge.data.failure_modes import (
+from gridforge.data.conditions import (
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
@@ -55,7 +55,7 @@ LOAD_ENVELOPE = {
 }
 
 
-def _failure_mode_for(name: str, seed: int):
+def _condition_for(name: str, seed: int):
     if name == "healthy":
         return HealthyMode(seed=seed)
     if name == "water_ingress":
@@ -64,7 +64,7 @@ def _failure_mode_for(name: str, seed: int):
         return ThermalAgeingMode(seed=seed)
     if name == "accelerated_dielectric":
         return AcceleratedDielectricMode(seed=seed)
-    raise ValueError(f"unknown failure mode: {name}")
+    raise ValueError(f"unknown condition mode: {name}")
 
 
 def _short(name: str) -> str:
@@ -91,7 +91,7 @@ def build_specs() -> list[CableYearSpec]:
                 duration_years=DURATION_YEARS,
                 load=LoadSpec(prof, peak_A=peak_A, base_A=base_A, seed=cable_idx),
                 weather=WeatherSpec(seed=cable_idx),
-                failure_mode=_failure_mode_for(mode, cable_idx),
+                condition=_condition_for(mode, cable_idx),
                 archetype_name=arch,
             )
         )

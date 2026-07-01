@@ -94,7 +94,7 @@ def _t3_labels(view: DatasetView) -> dict[str, np.ndarray]:
     """Per-hour binary anomaly label per cable.
 
     Positives: hours where pd_rate_relative > 1.5 (indicates a switching
-    impulse) or where the cable is in a thermal_ageing failure mode (every
+    impulse) or where the cable is in a thermal_ageing condition mode (every
     hour during sustained overheat is "anomalous" in the engineering sense).
     """
     out: dict[str, np.ndarray] = {}
@@ -104,7 +104,7 @@ def _t3_labels(view: DatasetView) -> dict[str, np.ndarray]:
         # Impulse-driven positives
         labels[rec.pd_rate_relative > 1.5] = 1
         # Thermal_ageing positives (per cable)
-        if rec.failure_mode == "thermal_ageing":
+        if rec.condition == "thermal_ageing":
             labels[:] = 1
         out[cid] = labels
     return out
@@ -114,12 +114,12 @@ def _t5_labels(view: DatasetView) -> dict[str, np.ndarray]:
     """Per-cable 3-vector of ground-truth driver attribution.
 
     Synthetic ground truth for v0.0.x: assume 50% load, 30% ambient, 20%
-    failure-mode driver as an industry-typical decomposition. The cable's
-    own failure_mode tilts the third component (for non-healthy modes).
+    condition-mode driver as an industry-typical decomposition. The cable's
+    own condition tilts the third component (for non-healthy modes).
     """
     out: dict[str, np.ndarray] = {}
     for cid, rec in view.cables.items():
-        if rec.failure_mode == "healthy":
+        if rec.condition == "healthy":
             out[cid] = np.array([0.6, 0.4, 0.0])
         else:
             out[cid] = np.array([0.5, 0.3, 0.2])

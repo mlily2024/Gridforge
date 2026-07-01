@@ -1,17 +1,17 @@
-"""Verification tests for failure-mode injectors."""
+"""Verification tests for condition-mode injectors."""
 
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from gridforge.data.failure_modes import (
+from gridforge.data.conditions import (
     MODES,
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
     WaterIngressMode,
-    make_failure_mode,
+    make_condition,
 )
 
 SECONDS_PER_YEAR = 365.25 * 24.0 * 3600.0
@@ -101,9 +101,9 @@ class TestRegistry:
 
     def test_make_unknown_raises(self) -> None:
         with pytest.raises(KeyError):
-            make_failure_mode("not_a_mode")
+            make_condition("not_a_mode")
 
     def test_make_known_returns_correct_type(self) -> None:
-        m = make_failure_mode("water_ingress", seed=7)
+        m = make_condition("water_ingress", seed=7)
         assert isinstance(m, WaterIngressMode)
         assert m.seed == 7

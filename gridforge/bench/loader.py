@@ -29,7 +29,7 @@ class CableRecord:
     split: str
     archetype: str
     load_profile: str
-    failure_mode: str
+    condition: str
     duration_years: float
     sample_period_s: float
     final_damage: float
@@ -112,7 +112,7 @@ def load_mini_dataset(dataset_dir: Path | str) -> DatasetView:
             split=manifest_row.get("split", "train"),
             archetype=manifest_row.get("archetype", ""),
             load_profile=manifest_row.get("load_profile", ""),
-            failure_mode=manifest_row.get("failure_mode", ""),
+            condition=manifest_row.get("condition", ""),
             duration_years=float(manifest_row.get("duration_years", "0") or 0),
             sample_period_s=float(manifest_row.get("sample_period_s", "0") or 0),
             final_damage=float(truth_row.get("final_damage", "0") or 0),

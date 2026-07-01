@@ -22,7 +22,7 @@ ranked, and the reference baselines anchor the leaderboard.
 | T2 | RUL regression: time to damage threshold from full-history features | MAE [years] | lower |
 | T3 | Per-day anomaly detection (impulse hours + thermal-ageing days as positives) | Precision @ recall=0.9 | higher |
 | T4 | Conductor-temperature prediction from (I, ambient, soil_rho_t) at each hour | RMSE [degC] | lower |
-| T5 | Counterfactual attribution of damage fractions to load / ambient / failure-mode driver | MAE on fractions | lower |
+| T5 | Counterfactual attribution of damage fractions to load / ambient / condition-mode driver | MAE on fractions | lower |
 
 Task definitions are kept lightweight (just metadata) so they can be
 referenced from external papers and submissions without requiring the

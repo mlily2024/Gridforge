@@ -15,7 +15,7 @@ from gridforge.bench import (
 )
 from gridforge.data.cable_year import CableYearSpec
 from gridforge.data.dataset import assemble_dataset
-from gridforge.data.failure_modes import (
+from gridforge.data.conditions import (
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
@@ -27,7 +27,7 @@ from gridforge.data.weather import WeatherSpec
 @pytest.fixture(scope="module")
 def runner_dataset(tmp_path_factory):
     out_dir = tmp_path_factory.mktemp("runner_dataset")
-    # Mix failure modes to exercise T3 and T5 ground-truth construction
+    # Mix condition modes to exercise T3 and T5 ground-truth construction
     modes = [HealthyMode, ThermalAgeingMode, AcceleratedDielectricMode]
     specs = []
     # 20 cables gives a reliable non-empty test split (15% of 20 ~ 3) under
@@ -40,7 +40,7 @@ def runner_dataset(tmp_path_factory):
                 duration_years=0.05,
                 load=LoadSpec("residential", peak_A=300.0, base_A=80.0, seed=i),
                 weather=WeatherSpec(seed=i),
-                failure_mode=m_cls(seed=i),
+                condition=m_cls(seed=i),
             )
         )
     assemble_dataset(specs, out_dir)

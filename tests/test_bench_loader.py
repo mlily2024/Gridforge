@@ -7,7 +7,7 @@ import pytest
 from gridforge.bench.loader import load_mini_dataset, stack_features
 from gridforge.data.cable_year import CableYearSpec
 from gridforge.data.dataset import assemble_dataset
-from gridforge.data.failure_modes import HealthyMode
+from gridforge.data.conditions import HealthyMode
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 
@@ -21,7 +21,7 @@ def tiny_dataset(tmp_path_factory):
             duration_years=0.05,
             load=LoadSpec("residential", peak_A=300.0, base_A=80.0, seed=i),
             weather=WeatherSpec(seed=i),
-            failure_mode=HealthyMode(seed=i),
+            condition=HealthyMode(seed=i),
         )
         for i in range(4)
     ]

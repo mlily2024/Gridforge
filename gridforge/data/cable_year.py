@@ -1,5 +1,5 @@
 """
-Cable-year simulator — composes load profile, weather, failure mode, and
+Cable-year simulator — composes load profile, weather, condition mode, and
 the GridForge physics primitives into a full year (or multi-year) telemetry
 trace plus failure-time ground truth.
 
@@ -53,7 +53,7 @@ from ..physics.thermal import (
     thermal_resistance_T4,
 )
 from ..physics.transient import cable_thermal_capacitance
-from .failure_modes import FailureMode, HealthyMode
+from .conditions import ConditionMode, HealthyMode
 from .load_profiles import LoadSpec
 from .weather import WeatherSpec
 
@@ -72,7 +72,7 @@ class CableYearSpec:
     duration_years: float
     load: LoadSpec
     weather: WeatherSpec
-    failure_mode: FailureMode = field(default_factory=HealthyMode)
+    condition: ConditionMode = field(default_factory=HealthyMode)
     line_voltage_V_rms: float = 11_000.0
     sheath_loss_factor: float = 0.05
     sample_period_s: float = 3600.0  # hourly
@@ -97,7 +97,7 @@ class CableYearResult:
     R_total_KmW: float
     C_cable_J_per_K_m: float
     time_constant_s: float
-    failure_mode_name: str
+    condition_name: str
     load_profile_name: str
     seed: int
     archetype_name: str
@@ -191,14 +191,14 @@ def simulate_cable_year(
 
         T_next = T_now + spec.sample_period_s * k2
 
-        # Apply failure-mode temperature offset (post-physics)
-        T_eff = T_next + spec.failure_mode.temp_offset_C(t)
+        # Apply condition-mode temperature offset (post-physics)
+        T_eff = T_next + spec.condition.temp_offset_C(t)
 
-        # Electric field with failure-mode multiplier
-        E = E_baseline * spec.failure_mode.field_multiplier(t)
+        # Electric field with condition-mode multiplier
+        E = E_baseline * spec.condition.field_multiplier(t)
 
         # Partial-discharge rate (relative to baseline)
-        pd_rel = spec.failure_mode.pd_rate_multiplier(t)
+        pd_rel = spec.condition.pd_rate_multiplier(t)
 
         # Damage increment via trapezoidal rule using current and prior rates
         rate_now = damage_rate(E, T_eff, spec.crine)
@@ -237,7 +237,7 @@ def simulate_cable_year(
         R_total_KmW=R_total,
         C_cable_J_per_K_m=C_total,
         time_constant_s=tau,
-        failure_mode_name=spec.failure_mode.name,
+        condition_name=spec.condition.name,
         load_profile_name=spec.load.profile_name,
         seed=spec.load.seed,
         archetype_name=archetype_name_resolved,

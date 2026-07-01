@@ -27,8 +27,8 @@ SECONDS_PER_YEAR: float = 365.25 * 24.0 * 3600.0
 
 
 @dataclass(frozen=True)
-class FailureMode:
-    """Base specification for a synthetic failure mode."""
+class ConditionMode:
+    """Base specification for a synthetic condition mode."""
 
     name: str
     description: str
@@ -45,7 +45,7 @@ class FailureMode:
 
 
 @dataclass(frozen=True)
-class HealthyMode(FailureMode):
+class HealthyMode(ConditionMode):
     """Nominal operation. No accelerated degradation."""
 
     name: str = "healthy"
@@ -53,7 +53,7 @@ class HealthyMode(FailureMode):
 
 
 @dataclass(frozen=True)
-class WaterIngressMode(FailureMode):
+class WaterIngressMode(ConditionMode):
     """Progressive water-tree growth at one cable joint.
 
     Locally lifted permittivity reduces the effective insulation thickness,
@@ -90,7 +90,7 @@ class WaterIngressMode(FailureMode):
 
 
 @dataclass(frozen=True)
-class ThermalAgeingMode(FailureMode):
+class ThermalAgeingMode(ConditionMode):
     """Sustained overload — conductor runs hot every day.
 
     Adds a constant offset to the conductor temperature on top of what the
@@ -107,7 +107,7 @@ class ThermalAgeingMode(FailureMode):
 
 
 @dataclass(frozen=True)
-class AcceleratedDielectricMode(FailureMode):
+class AcceleratedDielectricMode(ConditionMode):
     """Switching-transient bombardment — frequent surge events.
 
     Modelled as discrete impulse events superposed on the field history. Each
@@ -137,7 +137,7 @@ class AcceleratedDielectricMode(FailureMode):
 # Registry
 # ---------------------------------------------------------------------------
 
-MODES: dict[str, type[FailureMode]] = {
+MODES: dict[str, type[ConditionMode]] = {
     "healthy": HealthyMode,
     "water_ingress": WaterIngressMode,
     "thermal_ageing": ThermalAgeingMode,
@@ -145,9 +145,9 @@ MODES: dict[str, type[FailureMode]] = {
 }
 
 
-def make_failure_mode(name: str, seed: int = 0, **kwargs) -> FailureMode:
-    """Construct a failure mode by name with overrides."""
+def make_condition(name: str, seed: int = 0, **kwargs) -> ConditionMode:
+    """Construct a condition mode by name with overrides."""
     if name not in MODES:
-        raise KeyError(f"unknown failure mode: {name}; choose from {list(MODES)}")
+        raise KeyError(f"unknown condition mode: {name}; choose from {list(MODES)}")
     cls = MODES[name]
     return cls(seed=seed, **kwargs)

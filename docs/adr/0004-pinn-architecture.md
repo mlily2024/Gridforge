@@ -62,7 +62,7 @@ Wang, Yu, Perdikaris 2022 — gradient-norm balancing on every
     w_phys ← α * w_phys + (1 − α) * (||∇L_data|| / ||∇L_physics||)
 
 with EMA factor α = 0.9. This keeps both loss terms on the same gradient
-scale throughout training, avoiding the common PINN failure mode where
+scale throughout training, avoiding the common PINN condition mode where
 either the data fit dominates and the physics is ignored, or vice versa.
 
 The training run shipped with the demo script starts at `w_phys = 1e-3`
