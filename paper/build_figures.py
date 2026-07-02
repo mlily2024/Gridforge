@@ -23,6 +23,7 @@ FIG_DIR = REPO_ROOT / "paper" / "figures"
 # Map paper-figure name -> source PNG produced by a demo script. Any
 # new figure the paper references is added here.
 FIGURE_MAP = {
+    "fig00_methodology_pipeline.png": SCRIPTS_OUT / "00_methodology_pipeline.png",
     "fig01_iec_validation.png": SCRIPTS_OUT / "01_load_vs_temperature.png",
     "fig02_diurnal_response.png": SCRIPTS_OUT / "02_diurnal_load.png",
     "fig03_lifetime_curves.png": SCRIPTS_OUT / "03_lifetime_curves.png",
