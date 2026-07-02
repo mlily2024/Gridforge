@@ -29,13 +29,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridforge.data.cable_year import CableYearSpec
-from gridforge.data.dataset import assemble_dataset
 from gridforge.data.conditions import (
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
     WaterIngressMode,
 )
+from gridforge.data.dataset import assemble_dataset
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 from gridforge.physics.cable_archetype import ARCHETYPES

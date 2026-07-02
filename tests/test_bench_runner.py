@@ -14,12 +14,12 @@ from gridforge.bench import (
     run_benchmark,
 )
 from gridforge.data.cable_year import CableYearSpec
-from gridforge.data.dataset import assemble_dataset
 from gridforge.data.conditions import (
     AcceleratedDielectricMode,
     HealthyMode,
     ThermalAgeingMode,
 )
+from gridforge.data.dataset import assemble_dataset
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 

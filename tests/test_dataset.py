@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from gridforge.data.cable_year import CableYearSpec
+from gridforge.data.conditions import HealthyMode, WaterIngressMode
 from gridforge.data.dataset import (
     SPLIT_TEST,
     SPLIT_TRAIN,
@@ -14,7 +15,6 @@ from gridforge.data.dataset import (
     assemble_dataset,
     assign_split,
 )
-from gridforge.data.conditions import HealthyMode, WaterIngressMode
 from gridforge.data.load_profiles import LoadSpec
 from gridforge.data.weather import WeatherSpec
 
