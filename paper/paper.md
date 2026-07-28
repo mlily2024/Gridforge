@@ -128,7 +128,7 @@ To our knowledge, GridForge is the first open release of:
 
 - a calibrated synthetic dataset for UK 11 kV underground cables;
 - a benchmark suite with sealed test labels;
-- a physics-informed neural network with published validation against
+- a Physics-Informed Neural Network with published validation against
   the IEC 60287 analytical oracle.
 
 While simulation-derived benchmarks are well established in adjacent
@@ -138,7 +138,7 @@ UK 11 kV distribution cables.
 
 # 3  Methodology overview and forward model
 
-GridForge is built and evaluated as a four-stage pipeline. **(1) Forward model (physics oracle):** we implement and verify a first-principles cable model, comprising the IEC 60287 steady-state and IEC 60853-2 transient thermal solutions, a coaxial electric-field solution, and Crine dielectric-ageing kinetics; this serves as the trusted analytical reference (this section). **(2) Dataset generation:** we drive the oracle to synthesise calibrated cable-year telemetry across the cable archetypes, condition modes, and representative UK load and weather profiles, with deterministic splits and sealed test labels (Section 4). **(3) Surrogate training:** we train a physics-informed neural network against the oracle to obtain a fast, differentiable conductor-temperature predictor (Section 5). **(4) Benchmark evaluation:** we define five sealed-label tasks with three reference baselines and score them under a fixed protocol (Section 6). Every stage is reproducible from documented constants and fixed random seeds (Section 10).
+GridForge is built and evaluated as a four-stage pipeline. **(1) Forward model (physics oracle):** we implement and verify a first-principles cable model, comprising the IEC 60287 steady-state and IEC 60853-2 transient thermal solutions, a coaxial electric-field solution, and Crine dielectric-ageing kinetics; this serves as the trusted analytical reference (this section). **(2) Dataset generation:** we drive the oracle to synthesise calibrated cable-year telemetry across the cable archetypes, condition modes, and representative UK load and weather profiles, with deterministic splits and sealed test labels (Section 4). **(3) Surrogate training:** we train a Physics-Informed Neural Network against the oracle to obtain a fast, differentiable conductor-temperature predictor (Section 5). **(4) Benchmark evaluation:** we define five sealed-label tasks with three reference baselines and score them under a fixed protocol (Section 6). Every stage is reproducible from documented constants and fixed random seeds (Section 10).
 
 ![**Figure 1.** The GridForge methodology pipeline. A verified physics oracle (Section 3) generates a calibrated synthetic dataset (Section 4) and supervises the training of a physics-informed neural-network surrogate (Section 5); a five-task benchmark then scores the surrogate against reference baselines under a fixed protocol (Section 6).](figures/fig00_methodology_pipeline.png)
 
@@ -280,7 +280,7 @@ resolution comprises approximately 2.8 million samples and around
 cable-years (planned as future work) fit within the ~10 GB Zenodo
 deposit limit.
 
-# 5  Physics-informed neural network surrogate
+# 5  Physics-Informed Neural Network surrogate
 
 The IEC 60287 fixed-point solver of Section 3.1 is exact but slow (millisecond
 per call); for decision-engine queries that evaluate $\theta_c$
@@ -365,7 +365,7 @@ tasks (T2, T4, T5), and precision at a fixed recall
 |---|---|
 | `IECOracleBaseline` | Pure physics (IEC 60287 + Crine), no ML |
 | `GradientBoostedBaseline` | Histogram-based gradient-boosted regression trees [@friedman2001gbm] (scikit-learn `HistGradientBoosting`) on the three physical inputs: current, ambient temperature, and soil thermal resistivity |
-| `PINNBaseline` | The Section 5 physics-informed neural network |
+| `PINNBaseline` | The Section 5 Physics-Informed Neural Network |
 
 All three implement the same `Baseline.predict(view, task)` interface;
 external submissions subclass `Baseline` and are evaluated against the
