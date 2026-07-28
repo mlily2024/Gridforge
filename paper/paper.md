@@ -36,7 +36,7 @@ keywords: ["physics-informed neural networks", "underground distribution cables"
 
 About 130,000 km of 11 kV underground distribution cable is operated
 by the 14 Distribution Network Operator (DNO) licence areas in the
-United Kingdom [@uk-energy-networks-2024]. Replacing a medium-voltage cable section is a costly, disruptive intervention, and reactive replacement after an in-service failure, which requires emergency excavation, is markedly more expensive than the same work planned within a maintenance window. There is therefore
+United Kingdom [@uk-energy-networks-2024]. Replacing a medium-voltage cable section is a six-figure intervention: on the network operator's published connection unit costs, a 500 m 11 kV section is costed at approximately £150,000, rising above £200,000 for longer sections [@nged-charges-2023]. Reactive replacement after an in-service failure, which requires emergency excavation, is markedly more expensive than the same work planned within a maintenance window. There is therefore
 an economic case for predictive, condition-based cable replacement,
 strengthened by the fact that the RIIO-ED2 framework introduced by the
 UK regulator, Ofgem, correlates Customer Interruption (CI) and Customer
