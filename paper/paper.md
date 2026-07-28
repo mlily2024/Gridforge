@@ -20,15 +20,15 @@ abstract: |
   calibrated synthetic dataset of 64 cables (320 cable-years)
   representing four canonical UK 11 kV thermal archetypes and four
   condition modes;
-  (iii) a physics-informed neural network (PINN) surrogate that
+  (iii) a Physics-Informed Neural Network (PINN) surrogate that
   satisfies the algebraic balance defined by IEC 60287 during training
-  and reaches a best validation RMSE of 0.064 °C against the reference
-  analytical oracle; and (iv) a five-task benchmark suite that includes three
+  and reaches an RMSE of 0.148 °C on an independent held-out set against
+  the reference analytical oracle; and (iv) a five-task benchmark suite that includes three
   reference baseline models (pure physics, gradient-boosted trees, and
   the PINN). All numerical parameters are sourced from public standards,
   the code is licensed under the MIT licence, and the trained PINN needs
   only two minutes to converge on a CPU, enabling independent
-  verification by DNO engineering and research practitioners.
+  verification by DNO engineering and research practitioners. At present only the virtual-sensor task (T4) discriminates between the reference baselines; the other tasks tie or are undefined on this test split, so extending the baselines with task-specific logic is the priority next step.
 keywords: ["physics-informed neural networks", "underground distribution cables", "IEC 60287", "Crine ageing", "synthetic benchmark", "UK distribution networks"]
 ---
 
@@ -36,10 +36,7 @@ keywords: ["physics-informed neural networks", "underground distribution cables"
 
 About 130,000 km of 11 kV underground distribution cable is operated
 by the 14 Distribution Network Operator (DNO) licence areas in the
-United Kingdom [@uk-energy-networks-2024]. A single medium-voltage
-cable section replacement costs £150–250k, and a planned replacement
-within a maintenance window typically costs half the cost of the
-failure repairs that require emergency excavation. There is therefore
+United Kingdom [@uk-energy-networks-2024]. Replacing a medium-voltage cable section is a costly, disruptive intervention, and reactive replacement after an in-service failure, which requires emergency excavation, is markedly more expensive than the same work planned within a maintenance window. There is therefore
 an economic case for predictive, condition-based cable replacement,
 strengthened by the fact that the RIIO-ED2 framework introduced by the
 UK regulator, Ofgem, correlates Customer Interruption (CI) and Customer
@@ -94,8 +91,8 @@ Our contributions are:
    labels, every numerical parameter cited to a public standard
    (Section 4).
 3. **A physics-informed surrogate** — a compact PINN trained against
-   the oracle, with published validation (best 0.064 °C RMSE) and full
-   reproducibility (Section 5).
+   the oracle, with published validation (0.148 °C RMSE on an
+   independent held-out set) and full reproducibility (Section 5).
 4. **A sealed five-task benchmark** — heterogeneous prediction tasks
    with three reference baselines scored under a fixed evaluation
    protocol (Section 6).
@@ -176,12 +173,12 @@ T_4 = \frac{\rho_s}{2\pi}\ln\!\left(2u + \sqrt{4u^2 - 1}\right),
 \qquad u = \frac{2 L_b}{D_e},
 $$
 where $\rho_s$ is the soil thermal resistivity, $L_b$ the burial
-depth and $D_e$ the cable's overall outside diameter. The system is
+depth and $D_e$ the overall outside diameter of the cable. The system is
 implicit because $R$ depends on $\theta_c$; we solve by fixed-point
 iteration, which converges in 5–10 steps for typical operating
 conditions.
 
-![**Figure 2.** Steady-state conductor temperature predicted by the IEC 60287 fixed-point solver for the UK 11 kV 240 mm² Cu XLPE 3-core archetype at 0.8 m burial depth and 1.0 K·m/W soil resistivity. The super-linear rise above 350 A reflects the temperature dependence of the conductor a.c. resistance $R(\theta_c)$.](figures/fig01_iec_validation.png)
+![**Figure 2.** Steady-state conductor temperature predicted by the IEC 60287 fixed-point solver for the UK 11 kV 240 mm² Cu XLPE 3-core archetype at 0.8 m burial depth and 1.0 K·m/W soil thermal resistivity. The super-linear rise above 350 A reflects the temperature dependence of the conductor a.c. resistance $R(\theta_c)$.](figures/fig01_iec_validation.png)
 
 ## 3.2  Transient thermal model (lumped first-order)
 
@@ -242,7 +239,7 @@ measurements, is established practice in physics-informed surrogate modelling
 solutions [@raissi2019physics; @misyris2020physics]) and in prognostics, where
 the most widely used benchmarks are simulation-derived, notably the NASA C-MAPSS
 turbofan run-to-failure dataset [@saxena2008damage]. Two properties motivate it
-here: the surrogate's objective is to reproduce a trusted analytical standard, so
+here: the objective of the surrogate is to reproduce a trusted analytical standard, so
 validation against that standard is the appropriate criterion; and real
 cable-failure data is scarce and proprietary, whereas a synthetic dataset
 specified entirely by published constants and deterministic seeds is reproducible
@@ -272,7 +269,7 @@ dataset.
 
 Each cable-year is generated by the following procedure. (1) Sample a specification 6-tuple. (2) Build the archetype's physical parameters from the cited public sources. (3) Generate an hourly load-current series from the load profile and an hourly ambient and soil-temperature series from the weather climatology with added stochastic noise. (4) Integrate the coupled thermal and Crine-ageing equations of Section 3 with the fixed-point solver to obtain the conductor-temperature and cumulative-damage trajectories. (5) Apply the condition-mode injector: *healthy* leaves the trajectory unchanged, while *water_ingress*, *thermal_ageing*, and *accelerated_dielectric* accelerate degradation through their characteristic mechanism. (6) Write the resulting hourly telemetry and, separately, the sealed ground-truth labels (failure time, damage trajectory, and driver attribution).
 
-The dataset's deterministic SHA-256-based train/val/test split (70/15/15)
+A deterministic SHA-256-based train/val/test split (70/15/15)
 keeps each cable atomic across its telemetry stream. Sealed test
 labels live in a separate `ground_truth/failure_times.csv` file so a
 benchmark submission can withhold them at evaluation time.
@@ -308,7 +305,7 @@ $$
 $$
 where $\mathcal{L}_{\text{data}}$ is the mean-squared error against
 the oracle and $\mathcal{L}_{\text{phys}}$ is the squared residual
-of the IEC 60287 algebraic balance evaluated at the network's
+of the IEC 60287 algebraic balance evaluated at the network
 prediction. Gradients flow through the prediction into the residual,
 so back-propagation enforces physics consistency directly.
 
@@ -322,14 +319,17 @@ use $\alpha = 0.9$, $K = 50$, and an initial $w_p = 10^{-3}$.
 
 We sample 4000 training and 800 validation pairs uniformly from
 $I \in [50, 600]$ A, $\theta_a \in [0, 25]$ °C,
-$\rho_s \in [0.7, 2.0]$ K·m/W, paired with the IEC oracle's
+$\rho_s \in [0.7, 2.0]$ K·m/W, paired with the IEC oracle
 $\theta_c$. Adam at learning rate $2 \times 10^{-3}$, batch size 256,
-1500 epochs trains in approximately two minutes on a CPU. All architecture and optimisation hyperparameters were fixed a priori, with the loss-weight schedule following [@wang2022when]; no hyperparameter search was performed, since the surrogate already meets its accuracy target with a wide margin, as reported below. The
-**best validation RMSE is 0.064 °C, final 0.131 °C, and an
-independent held-out set of 1000 pairs gives 0.148 °C**, comfortably
-inside the 0.5 °C acceptance target set a priori.
+1500 epochs trains in approximately two minutes on a CPU. All architecture and optimisation hyperparameters were fixed a priori, with the loss-weight schedule following [@wang2022when]; no hyperparameter search was performed, since the surrogate already meets its accuracy target with a wide margin, as reported below. We report the
+**independent held-out RMSE of 0.148 °C** (1000 pairs drawn separately
+from the training and validation data) as the headline figure, because
+it measures generalisation on data used neither for training nor for
+checkpoint selection. For completeness, the best validation checkpoint
+reached 0.064 °C and the final-epoch validation RMSE was 0.131 °C; all
+three are comfortably inside the 0.5 °C acceptance target set a priori.
 
-![**Figure 3.** PINN training history over 1500 epochs. Top: data loss (MSE against the IEC 60287 oracle) and physics loss (squared IEC algebraic-balance residual evaluated at the network's prediction), both on a log scale. Bottom: validation RMSE on a held-out set of 800 pairs. The 0.5 °C acceptance target is reached by epoch 500 and the trajectory stabilises by epoch 1000.](figures/fig04_pinn_training_curves.png)
+![**Figure 3.** PINN training history over 1500 epochs. Top: data loss (MSE against the IEC 60287 oracle) and physics loss (squared IEC algebraic-balance residual evaluated at the network prediction), both on a log scale. Bottom: RMSE on the 800-pair validation set (the set used for checkpoint selection; distinct from the independent 1000-pair held-out set of Figure 4). The 0.5 °C acceptance target is reached by epoch 500 and the trajectory stabilises by epoch 1000.](figures/fig04_pinn_training_curves.png)
 
 ![**Figure 4.** PINN predictions versus IEC 60287 oracle ground truth on an independent held-out set (n = 1000). All points lie close to the diagonal across the full input range $I \in [50, 600]$ A, indicating no systematic bias. Held-out RMSE 0.148 °C.](figures/fig05_pinn_validation_scatter.png)
 
@@ -364,7 +364,7 @@ tasks (T2, T4, T5), and precision at a fixed recall
 | Baseline | Mechanism |
 |---|---|
 | `IECOracleBaseline` | Pure physics (IEC 60287 + Crine), no ML |
-| `GradientBoostedBaseline` | Histogram-based gradient-boosted regression trees [@friedman2001gbm] (scikit-learn `HistGradientBoosting`) on the three physical inputs: current, ambient temperature, and soil resistivity |
+| `GradientBoostedBaseline` | Histogram-based gradient-boosted regression trees [@friedman2001gbm] (scikit-learn `HistGradientBoosting`) on the three physical inputs: current, ambient temperature, and soil thermal resistivity |
 | `PINNBaseline` | The Section 5 physics-informed neural network |
 
 All three implement the same `Baseline.predict(view, task)` interface;
@@ -388,7 +388,7 @@ for each baseline in Table 3.
 | T4 MAE [°C] | 0.001 † | 8.77 | **5.84** |
 | T5 MAE | 0.141 | 0.141 | 0.141 |
 
-† The IEC Oracle T4 baseline returns the dataset's lumped-transient
+† The IEC Oracle T4 baseline returns the dataset lumped-transient
 ground truth and therefore serves as an upper-bound reference rather
 than a fair steady-state physics comparator (see Section 9).
 
@@ -400,7 +400,7 @@ Table 3): the gradient-boosted baseline scores 10.39 °C and the PINN
 appears on mean absolute error, where the PINN improves on the
 gradient-boosted baseline by **33 %** (5.84 vs 8.77 °C) on identical
 inputs, both models receiving only current, ambient temperature, and
-soil resistivity. The gap between RMSE and MAE for both surrogates is
+soil thermal resistivity. The gap between RMSE and MAE for both surrogates is
 the signature of a heavy-tailed error distribution: neither
 steady-state surrogate reproduces the transient thermal lag carried in
 the T4 ground truth (Section 9, limitation 2), and those lag-driven
@@ -424,11 +424,11 @@ reflects the present state of the reference baselines honestly.
 
 ## 8.1  Diurnal load response
 
-![**Figure 5.** Four-day transient simulation under a UK two-peak residential load profile (100–350 A swing, Met Office winter ambient). Daily peak conductor temperature reaches 43 °C against the XLPE 90 °C thermal limit; the visible lag between load peaks and temperature peaks reflects the cable's first-order thermal time constant of approximately 64 minutes.](figures/fig02_diurnal_response.png)
+![**Figure 5.** Four-day transient simulation under a UK two-peak residential load profile (100–350 A swing, Met Office winter ambient). Daily peak conductor temperature reaches 43 °C against the XLPE 90 °C thermal limit; the visible lag between load peaks and temperature peaks reflects the first-order thermal time constant of the cable, approximately 64 minutes.](figures/fig02_diurnal_response.png)
 
 Figure 5 shows a four-day simulated trace under a UK two-peak
 domestic load profile (residential profile, 100–350 A swing,
-Met Office winter ambient ~5 °C). The cable's first-order time
+Met Office winter ambient ~5 °C). The cable first-order time
 constant $\tau \approx 64$ min is visible as the lag between
 load peaks and conductor-temperature peaks. Daily peak conductor
 temperature reaches 43 °C, well below the XLPE 90 °C thermal
@@ -505,8 +505,8 @@ python scripts/05_train_pinn_iec_oracle.py
 python scripts/06_run_benchmark.py
 ```
 
-Random seeds are fixed throughout the codebase. The PINN's training
-seed is `2026_04_28`; the dataset's per-cable seed is the cable
+Random seeds are fixed throughout the codebase. The PINN training
+seed is `2026_04_28`; the dataset per-cable seed is the cable
 index. Trained PINN weights are saved alongside the validation
 scatter at `scripts/output/05_pinn_training/`. The benchmark
 leaderboard CSV is written to
@@ -523,7 +523,7 @@ the UK distribution-cable monitoring community. Its long-term objective
 is to foster a culture of transparent, reproducible evaluation. The
 framework is deliberately compact, enabling rapid adoption and low
 overhead, while remaining sufficiently expressive to support meaningful
-comparison of competing methods on a shared evaluation surface.
+comparison of competing methods on a shared evaluation surface. At present the discriminating power of the benchmark is concentrated in the virtual-sensor task (T4): tasks T1, T3 and T5 tie because the reference baselines defer to shared downstream logic, and T2 is undefined on the current test split, so extending the baselines with task-specific logic is the immediate priority before the suite can rank models across all five tasks.
 Community engagement is integral to its evolution: critiques,
 counterarguments, and extensions are explicitly encouraged.
 
