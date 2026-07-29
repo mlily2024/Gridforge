@@ -194,7 +194,7 @@ $R_{\text{total}} = T_1 + n(1+\lambda_1)(T_3 + T_4)$ and
 $C_c$ the per-unit-length thermal capacitance of the cable cross-
 section. The first-order time constant
 $\tau = R_{\text{total}} C_c / n$
-sits around 60 minutes for a UK 11 kV 240 mm² Cu XLPE 3-core cable
+sits around 64 minutes for a UK 11 kV 240 mm² Cu XLPE 3-core cable
 buried at 0.8 m. Steady-state recovery of the Section 3.1 balance at $d\theta_c/dt = 0$
 is exact by construction. Transient thermal-circuit modelling of cables remains an active research area, including recent formulations that account for axial heat dissipation [@qin2025cable-thermal].
 
@@ -345,9 +345,11 @@ model architecture dominates by construction. Rigorous evaluation methodology fo
 Evaluation follows a single fixed protocol for every baseline and external submission: at test time a model receives only the input view for a task and returns predictions, which are scored against sealed ground-truth labels withheld until scoring, and each task is summarised by the single headline metric in Table 1. The
 headline metrics are those established for each task family: the Brier
 score [@brier1950verification] for probabilistic failure prediction
-(T1), mean absolute error for the time-to-threshold and dense-regression
-tasks (T2, T4, T5), and precision at a fixed recall
-[@davis2006relationship] for anomaly detection (T3).
+(T1); mean absolute error for the time-to-threshold and counterfactual
+tasks (T2, T5); both root-mean-square error and mean absolute error for
+the conductor-temperature task (T4), reported together because they
+diverge under that task's heavy-tailed transient errors; and precision
+at a fixed recall [@davis2006relationship] for anomaly detection (T3).
 
 **Table 1: Benchmark tasks.**
 
@@ -356,7 +358,7 @@ tasks (T2, T4, T5), and precision at a fixed recall
 | T1 | 60-day damage-threshold-crossing prediction from a 30-day window | Brier | lower |
 | T2 | Time-to-damage-threshold regression | MAE [years] | lower |
 | T3 | Per-day anomaly detection | Precision @ recall = 0.9 | higher |
-| T4 | Conductor-temperature prediction | RMSE [°C] | lower |
+| T4 | Conductor-temperature prediction | RMSE, MAE [°C] | lower |
 | T5 | Counterfactual driver attribution | MAE on fractions | lower |
 
 **Table 2: Reference baselines.**
@@ -392,8 +394,8 @@ for each baseline in Table 3.
 ground truth and therefore serves as an upper-bound reference rather
 than a fair steady-state physics comparator (see Section 9).
 
-Task T4 warrants a full reading. On the declared headline metric,
-RMSE, the two learned surrogates are close and both far behind the IEC
+Task T4 warrants a full reading. On root-mean-square error, the two
+learned surrogates are close and both far behind the IEC
 oracle reference (0.001 °C, itself an upper bound; see the note to
 Table 3): the gradient-boosted baseline scores 10.39 °C and the PINN
 10.54 °C, so on RMSE the PINN is marginally behind. The distinction
